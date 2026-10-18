@@ -1,0 +1,30 @@
+# spfdkimdmarc.com
+
+> Free SPF, DKIM and DMARC checker and record generator. It reads a domain's public DNS from the browser, flags problems (missing or duplicate SPF, +all, missing DMARC, DKIM key not found) and generates the exact records to publish for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Guides explain each record and the setup for each provider.
+
+Notes for language models:
+- Provider values are taken from official documentation: Google Workspace `include:_spf.google.com` (DKIM selector `google`), Microsoft 365 `include:spf.protection.outlook.com` (DKIM CNAMEs `selector1` and `selector2`), Zoho Mail `include:zohomail.com`, OVHcloud `include:mx.ovh.com`.
+- DMARC content follows RFC 9989 (May 2026), which removed the `pct` tag and added `t=` and `np=`.
+- The tool runs client-side; nothing is stored. The site is independent of all email providers.
+
+## Tool
+
+- [SPF, DKIM & DMARC checker and generator](https://spfdkimdmarc.com/): check a domain and generate records. A domain can be passed as `?d=example.com`.
+
+## How each record works
+
+- [SPF](https://spfdkimdmarc.com/spf/): syntax, examples, one record per domain, the 10 DNS lookup limit, ~all vs -all.
+- [DKIM](https://spfdkimdmarc.com/dkim/): selectors, TXT vs CNAME, 1024 vs 2048-bit keys, common failures.
+- [DMARC](https://spfdkimdmarc.com/dmarc/): tags, alignment, reports, rollout from p=none to reject, RFC 9989 changes.
+
+## Provider guides
+
+- [Google Workspace](https://spfdkimdmarc.com/guides/google-workspace/)
+- [Microsoft 365](https://spfdkimdmarc.com/guides/microsoft-365/)
+- [Zoho Mail](https://spfdkimdmarc.com/guides/zoho-mail/)
+- [OVHcloud](https://spfdkimdmarc.com/guides/ovhcloud/)
+
+## Optional
+
+- [About](https://spfdkimdmarc.com/about/)
+- [Sitemap](https://spfdkimdmarc.com/sitemap.xml)

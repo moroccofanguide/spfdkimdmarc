@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+"""Static site generator for spfdkimdmarc.com.
+
+Each file in pages/ starts with one line of JSON metadata, followed by the
+page body (HTML). Run from anywhere: python3 _build/build.py
+Output is written to the repository root (one folder per page).
+"""
+import html
+import json
+import os
+import re
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+SITE = "https://spfdkimdmarc.com"
+NAME = "spfdkimdmarc.com"
+
+NAV = [("/", "Checker"), ("/spf/", "SPF"), ("/dkim/", "DKIM"), ("/dmarc/", "DMARC"), ("/guides/", "Guides")]
+
+ICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' "
+        "rx='7' fill='%230f766e'/%3E%3Cpath d='M8 11h16v10H8z' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath "
+        "d='M8 11l8 6 8-6' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E")
+
+CTA = """<div class="cta">
+  <p><strong>Check your domain now.</strong> See your current SPF, DKIM and DMARC records and get the exact entries to fix them.</p>
+  <form class="row" action="/" method="get">
+    <input type="text" name="d" inputmode="url" autocomplete="off" spellcheck="false" placeholder="example.com" aria-label="Domain name">
+    <button type="submit">Check</button>
+  </form>
+</div>"""
+
+
+def esc(s):
+    return html.escape(s, quote=True)
+
+
+def load_pages():
+    pages = []
+    for fn in sorted(os.listdir(os.path.join(HERE, "pages"))):
+        if not fn.endswith(".html"):
+            continue
+        with open(os.path.join(HERE, "pages", fn), encoding="utf-8") as f:
+            first, body = f.read().split("\n", 1)
+        meta = json.loads(first)
+        meta["body"] = body
+        pages.append(meta)
+    return pages
+
+
+def jsonld(obj):
+    return '<script type="application/ld+json">' + json.dumps(obj, ensure_ascii=False, separators=(",", ":")) + "</script>"
+
+
+def strip_tags(s):
+    return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", s)).strip()
+
+
+def render(p, by_path):
+    url = SITE + p["path"]
+    seo_title = p.get("seo_title") or p["title"]
+    ld = []
+    if p["type"] == "home":
+        ld.append({"@context": "https://schema.org", "@type": "WebApplication", "name": "SPF, DKIM & DMARC Checker and Record Generator",
+                   "url": url, "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any",
+                   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": p["description"]})
+    else:
+        crumbs = [{"@type": "ListItem", "position": 1, "name": "Home", "item": SITE + "/"}]
+        if p["path"].startswith("/guides/") and p["path"] != "/guides/":
+            crumbs.append({"@type": "ListItem", "position": 2, "name": "Guides", "item": SITE + "/guides/"})
+        crumbs.append({"@type": "ListItem", "position": len(crumbs) + 1, "name": p.get("crumb", p["title"]), "item": url})
+        ld.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": crumbs})
+        if p["type"] == "article":
+            ld.append({"@context": "https://schema.org", "@type": "TechArticle", "headline": p["title"], "description": p["description"],
+                       "url": url, "datePublished": p["published"], "dateModified": p["updated"], "inLanguage": "en",
+                       "author": {"@type": "Organization", "name": NAME, "url": SITE + "/about/"},
+                       "publisher": {"@type": "Organization", "name": NAME, "url": SITE + "/"}})
+    faq = p.get("faq") or []
+    if faq:
+        ld.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
+            {"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": strip_tags(a)}} for q, a in faq]})
+
+    nav = "".join('<li><a href="%s"%s>%s</a></li>' % (h, ' aria-current="page"' if (h == p["path"] or (h != "/" and p["path"].startswith(h))) else "", t)
+                  for h, t in NAV)
+
+    body = p["body"].replace("{{cta}}", CTA)
+    out = []
+    out.append("<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">")
+    out.append("<title>%s</title>" % esc(seo_title))
+    out.append('<meta name="description" content="%s">' % esc(p["description"]))
+    out.append('<link rel="canonical" href="%s">' % url)
+    if p.get("noindex"):
+        out.append('<meta name="robots" content="noindex">')
+    out.append('<meta property="og:type" content="%s">' % ("website" if p["type"] == "home" else "article"))
+    out.append('<meta property="og:title" content="%s">' % esc(seo_title))
+    out.append('<meta property="og:description" content="%s">' % esc(p["description"]))
+    out.append('<meta property="og:url" content="%s">' % url)
+    out.append('<meta property="og:site_name" content="%s">' % NAME)
+    out.append('<meta name="theme-color" content="#0f172a">')
+    out.append('<link rel="icon" href="%s">' % ICON)
+    out.append('<link rel="stylesheet" href="/assets/style.css">')
+    out.extend(jsonld(o) for o in ld)
+    out.append("</head>\n<body>\n<div class=\"wrap\">")
+    out.append('<nav class="nav" aria-label="Main"><a class="brand" href="/">%s</a><ul>%s</ul></nav>' % (NAME, nav))
+
+    if p["type"] == "home":
+        out.append(body)
+        if faq:
+            out.append('<section class="panel faq" aria-labelledby="h-faq"><h2 id="h-faq">Questions</h2>')
+            for q, a in faq:
+                out.append("<h3>%s</h3><p>%s</p>" % (esc(q), a))
+            out.append("</section>")
+    else:
+        crumb_html = '<a href="/">Home</a>'
+        if p["path"].startswith("/guides/") and p["path"] != "/guides/":
+            crumb_html += ' / <a href="/guides/">Guides</a>'
+        crumb_html += " / " + esc(p.get("crumb", p["title"]))
+        out.append('<p class="crumbs">%s</p>' % crumb_html)
+        out.append("<article>")
+        out.append("<h1>%s</h1>" % esc(p["title"]))
+        if p["type"] == "article":
+            out.append('<p class="meta">Updated %s</p>' % p["updated"])
+        out.append(body)
+        if faq:
+            out.append('<section class="faq"><h2>Questions</h2>')
+            for q, a in faq:
+                out.append("<h3>%s</h3><p>%s</p>" % (esc(q), a))
+            out.append("</section>")
+        rel = [by_path[r] for r in p.get("related", []) if r in by_path]
+        if rel:
+            out.append('<section class="related"><h2>Related</h2><div class="cards">')
+            for r in rel:
+                out.append('<a class="card" href="%s"><strong>%s</strong><span>%s</span></a>' % (r["path"], esc(r["title"]), esc(r.get("short", r["description"]))))
+            out.append("</div></section>")
+        out.append("</article>")
+
+    out.append('<footer><div class="links"><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/guides/">Setup guides</a></div>'
+               '<p>Free SPF, DKIM and DMARC checker and record generator. Lookups run in your browser through public DNS-over-HTTPS resolvers; nothing is stored.</p></footer>')
+    out.append("</div>")
+    if p["type"] == "home":
+        with open(os.path.join(HERE, "tool.js"), encoding="utf-8") as f:
+            out.append("<script>\n" + f.read() + "</script>")
+    out.append("</body>\n</html>\n")
+    return "\n".join(out)
+
+
+def main():
+    pages = load_pages()
+    by_path = {p["path"]: p for p in pages}
+    for p in pages:
+        if p["path"] == "/404.html":
+            dest = os.path.join(ROOT, "404.html")
+        else:
+            d = os.path.join(ROOT, p["path"].strip("/"))
+            os.makedirs(d, exist_ok=True)
+            dest = os.path.join(d, "index.html")
+        with open(dest, "w", encoding="utf-8") as f:
+            f.write(render(p, by_path))
+    urls = sorted((p for p in pages if not p.get("noindex")), key=lambda p: (p["path"] != "/", p["path"]))
+    with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
+        f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
+        for p in urls:
+            f.write("  <url>\n    <loc>%s%s</loc>\n    <lastmod>%s</lastmod>\n  </url>\n" % (SITE, p["path"], p["updated"]))
+        f.write("</urlset>\n")
+    print("built %d pages" % len(pages))
+
+
+if __name__ == "__main__":
+    main()

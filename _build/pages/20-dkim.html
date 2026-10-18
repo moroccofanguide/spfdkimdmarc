@@ -1,0 +1,59 @@
+{"path":"/dkim/","type":"article","title":"DKIM explained: selectors, keys and how to check them","seo_title":"DKIM Record Explained: Selectors, Key Length and Common Errors","description":"How DKIM signing works, what a selector is and how to find yours, TXT vs CNAME records, 1024 vs 2048-bit keys, and how to fix the most common DKIM failures.","crumb":"DKIM","short":"Selectors, key length, TXT vs CNAME and common failures.","published":"2026-10-18","updated":"2026-10-18","related":["/spf/","/dmarc/","/guides/microsoft-365/"],"faq":[["Can I create a DKIM key myself?","Only if you run the mail server yourself. With a hosted provider (Google Workspace, Microsoft 365, Zoho, OVHcloud), the provider holds the private key and gives you the public record to publish. A key you generate elsewhere is useless to them."],["Can a domain have several DKIM records?","Yes, one per selector. Each sending service uses its own selector, so Google, a newsletter tool and a helpdesk can all sign for the same domain without conflict."],["Does DKIM encrypt my email?","No. DKIM signs the message so receivers can verify where it comes from and that it was not altered. The content is not hidden."],["How often should I rotate DKIM keys?","There is no fixed rule. Microsoft 365 provides two selectors so you can rotate without downtime. Rotating at least once a year, and immediately if you suspect a key was exposed, is a reasonable practice."]]}
+<p>DKIM (DomainKeys Identified Mail) adds a digital signature to every message you send. Your provider signs with a private key it keeps secret, and publishes the matching public key in your DNS. The receiving server fetches that key, verifies the signature, and knows two things: the message really was authorized by your domain, and it was not modified on the way.</p>
+
+<div class="toc"><strong>On this page</strong><ol>
+<li><a href="#how">How a DKIM signature works</a></li>
+<li><a href="#selector">Selectors and how to find yours</a></li>
+<li><a href="#record">The DNS record: TXT or CNAME</a></li>
+<li><a href="#keys">1024 or 2048-bit keys</a></li>
+<li><a href="#thirdparty">Third-party senders</a></li>
+<li><a href="#errors">Common DKIM failures</a></li>
+</ol></div>
+
+<h2 id="how">How a DKIM signature works</h2>
+<p>Each signed message carries a <code>DKIM-Signature</code> header. Two of its tags matter to you:</p>
+<ul>
+<li><code>d=</code> is the signing domain, for example <code>d=example.com</code>.</li>
+<li><code>s=</code> is the selector, for example <code>s=google</code>.</li>
+</ul>
+<p>The receiver combines them to find the public key at <code>selector._domainkey.domain</code>, here <code>google._domainkey.example.com</code>. If the key is there and the signature matches, DKIM passes.</p>
+<p>Unlike <a href="/spf/">SPF</a>, DKIM survives forwarding, because the signature travels with the message. That makes it the more reliable of the two for <a href="/dmarc/">DMARC</a>.</p>
+
+<h2 id="selector">Selectors and how to find yours</h2>
+<p>A selector is just a name that lets one domain hold several keys. Common defaults:</p>
+<div class="tbl"><table>
+<thead><tr><th>Provider</th><th>Selector</th><th>Record type</th></tr></thead>
+<tbody>
+<tr><td>Google Workspace</td><td><code>google</code> (default prefix)</td><td>TXT</td></tr>
+<tr><td>Microsoft 365</td><td><code>selector1</code> and <code>selector2</code></td><td>CNAME</td></tr>
+<tr><td>Zoho Mail</td><td>The name you choose, for example <code>zoho</code></td><td>TXT</td></tr>
+<tr><td>OVHcloud MX Plan</td><td><code>ovhmo…-selector1</code> and <code>-selector2</code></td><td>CNAME</td></tr>
+</tbody></table></div>
+<p>If you are not sure, read it from a real message. Send an email from your domain to a Gmail address, open it, choose <strong>Show original</strong>, and find the <code>DKIM-Signature</code> header. The value after <code>s=</code> is your selector. The same page shows <code>dkim=pass</code> or <code>dkim=fail</code> in the Authentication-Results header.</p>
+<p>Then check it with the <a href="/#check">DKIM verifier</a> in step 3 of the checker.</p>
+
+<h2 id="record">The DNS record: TXT or CNAME</h2>
+<p>A DKIM public key is a TXT record:</p>
+<pre><code>google._domainkey.example.com  TXT  "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA..."</code></pre>
+<p><code>v=DKIM1</code> is the version, <code>k=rsa</code> the key type and <code>p=</code> the public key itself. A record with an empty <code>p=</code> means the key has been revoked.</p>
+<p>Some providers ask for a <strong>CNAME</strong> instead. Microsoft 365 and OVHcloud do this: your <code>selector1._domainkey</code> points to a name they control, and they publish the actual key there. The advantage is that they can rotate keys without you touching your DNS. The DKIM verifier on this site follows those CNAMEs automatically.</p>
+<h3>Long keys and the 255-character limit</h3>
+<p>A 2048-bit key is longer than the 255 characters allowed in one TXT string. The record must then be split into several quoted strings in the same record, which receivers join together. Most DNS panels split automatically. Older ones sometimes cut the key or refuse it: if verification fails right after publishing a 2048-bit key, compare the published value with the original character by character.</p>
+
+<h2 id="keys">1024 or 2048-bit keys</h2>
+<p>RFC 8301 requires at least 1024 bits and recommends 2048. Gmail requires a DKIM key of at least 1024 bits for mail sent to personal Gmail accounts. Use 2048 whenever your DNS host accepts it. Choose 1024 only if your DNS panel cannot store the longer record, and plan to switch later.</p>
+
+<h2 id="thirdparty">Third-party senders</h2>
+<p>Newsletter tools, CRMs, invoicing and helpdesk software usually sign with <strong>their own</strong> domain by default (<code>d=theirplatform.com</code>). DKIM passes, but it does not help your DMARC, because the signing domain is not yours. Look for a "custom domain", "domain authentication" or "sender authentication" setting in each tool: it gives you DNS records (often CNAMEs) so it can sign with <code>d=yourdomain.com</code>.</p>
+
+<h2 id="errors">Common DKIM failures</h2>
+<h3>No key found</h3>
+<p>The receiver could not find a record at <code>selector._domainkey.domain</code>. Check the selector spelling, check that you did not publish the record as <code>selector._domainkey.example.com.example.com</code> (some panels add the domain automatically), and wait for DNS propagation.</p>
+<h3>Body hash did not verify</h3>
+<p>The message was changed after it was signed. Typical causes: a mailing list or security gateway adding a footer, a disclaimer or signature appended by a server after the provider signed, or a forwarding service rewriting content. The fix is to make those changes before signing, or to have the last hop sign the message.</p>
+<h3>Signature verification failed</h3>
+<p>The key in DNS does not match the private key used for signing. This happens when a key was regenerated in the provider console but the old DNS record is still published, or when a long key was truncated by the DNS panel.</p>
+<h3>DKIM enabled in DNS but messages are not signed</h3>
+<p>Publishing the record is only half the job. Google Workspace needs <strong>Start authentication</strong>, Microsoft 365 needs signing enabled in the Defender portal, and Zoho needs the selector verified and enabled. See the <a href="/guides/">provider guides</a>.</p>
+
+{{cta}}

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPF, DKIM and DMARC Setup Guides by Email Provider</title>
+<meta name="description" content="Step-by-step SPF, DKIM and DMARC setup guides for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud, with the exact DNS records to publish.">
+<link rel="canonical" href="https://spfdkimdmarc.com/guides/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SPF, DKIM and DMARC Setup Guides by Email Provider">
+<meta property="og:description" content="Step-by-step SPF, DKIM and DMARC setup guides for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud, with the exact DNS records to publish.">
+<meta property="og:url" content="https://spfdkimdmarc.com/guides/">
+<meta property="og:site_name" content="spfdkimdmarc.com">
+<meta name="theme-color" content="#0f172a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f766e'/%3E%3Cpath d='M8 11h16v10H8z' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M8 11l8 6 8-6' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://spfdkimdmarc.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://spfdkimdmarc.com/guides/"}]}</script>
+</head>
+<body>
+<div class="wrap">
+<nav class="nav" aria-label="Main"><a class="brand" href="/">spfdkimdmarc.com</a><ul><li><a href="/">Checker</a></li><li><a href="/spf/">SPF</a></li><li><a href="/dkim/">DKIM</a></li><li><a href="/dmarc/">DMARC</a></li><li><a href="/guides/" aria-current="page">Guides</a></li></ul></nav>
+<p class="crumbs"><a href="/">Home</a> / Guides</p>
+<article>
+<h1>Email authentication setup guides</h1>
+<p>Each guide gives the exact records for one provider, where to click in its admin console, and the problems that usually come up. Values are taken from the provider's official documentation.</p>
+<h2>By provider</h2>
+<div class="cards">
+  <a class="card" href="/guides/google-workspace/"><strong>Google Workspace</strong><span>SPF include, the google._domainkey key and DMARC.</span></a>
+  <a class="card" href="/guides/microsoft-365/"><strong>Microsoft 365</strong><span>SPF, the two DKIM CNAMEs and the Defender portal.</span></a>
+  <a class="card" href="/guides/zoho-mail/"><strong>Zoho Mail</strong><span>SPF, adding and verifying a DKIM selector.</span></a>
+  <a class="card" href="/guides/ovhcloud/"><strong>OVHcloud</strong><span>MX Plan, Email Pro and Exchange: SPF and DKIM.</span></a>
+</div>
+<h2>How each record works</h2>
+<div class="cards">
+  <a class="card" href="/spf/"><strong>SPF</strong><span>Syntax, examples, ~all vs -all and the 10-lookup limit.</span></a>
+  <a class="card" href="/dkim/"><strong>DKIM</strong><span>Selectors, key length, TXT vs CNAME and common failures.</span></a>
+  <a class="card" href="/dmarc/"><strong>DMARC</strong><span>Tags, alignment, reports and moving from p=none to reject.</span></a>
+</div>
+<div class="cta">
+  <p><strong>Check your domain now.</strong> See your current SPF, DKIM and DMARC records and get the exact entries to fix them.</p>
+  <form class="row" action="/" method="get">
+    <input type="text" name="d" inputmode="url" autocomplete="off" spellcheck="false" placeholder="example.com" aria-label="Domain name">
+    <button type="submit">Check</button>
+  </form>
+</div>
+
+</article>
+<footer><div class="links"><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/guides/">Setup guides</a></div><p>Free SPF, DKIM and DMARC checker and record generator. Lookups run in your browser through public DNS-over-HTTPS resolvers; nothing is stored.</p></footer>
+</div>
+</body>
+</html>

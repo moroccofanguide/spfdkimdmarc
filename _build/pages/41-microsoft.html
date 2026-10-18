@@ -1,0 +1,55 @@
+{"path":"/guides/microsoft-365/","type":"article","title":"SPF, DKIM and DMARC for Microsoft 365","seo_title":"Microsoft 365 SPF, DKIM and DMARC Setup (Step by Step)","description":"Set up SPF, DKIM and DMARC for Microsoft 365 and Exchange Online: the SPF include, the two DKIM CNAME records in the old and new formats, where to enable signing in Defender, and DMARC.","crumb":"Microsoft 365","short":"SPF, the two DKIM CNAMEs and the Defender portal.","published":"2026-10-18","updated":"2026-10-18","related":["/guides/google-workspace/","/dkim/","/dmarc/"],"faq":[["Do I need to do anything for my onmicrosoft.com domain?","No. Microsoft manages SPF and DKIM for the initial onmicrosoft.com domain. These steps are for each custom domain you add."],["Why does Microsoft recommend -all?","Microsoft explains that DMARC can effectively ignore an SPF ~all failure when a message has no DKIM signature, so it recommends -all for domains that also use DKIM and DMARC."],["Can I build the CNAME values myself?","Microsoft advises against it. Copy the exact values from the Defender portal or from Get-DkimSigningConfig, because the new format contains a partition letter assigned by Microsoft."]]}
+<p>Microsoft 365 handles DKIM differently from most providers: instead of a TXT key, you publish two CNAME records that point to keys Microsoft manages. The steps below follow Microsoft's documentation for Exchange Online and Defender for Office 365.</p>
+
+<div class="toc"><strong>On this page</strong><ol>
+<li><a href="#spf">SPF</a></li>
+<li><a href="#dkim">DKIM</a></li>
+<li><a href="#dmarc">DMARC</a></li>
+<li><a href="#problems">Common problems</a></li>
+</ol></div>
+
+<h2 id="spf">1. SPF</h2>
+<p>For a custom domain that sends only through Microsoft 365 (commercial and GCC), publish on the domain itself:</p>
+<pre><code>v=spf1 include:spf.protection.outlook.com -all</code></pre>
+<p>Microsoft recommends <code>-all</code> for domains that also use DKIM and DMARC. If other services send with your domain, add them to this same record. Microsoft notes that fewer than 10 includes does not guarantee fewer than 10 DNS lookups, because includes can contain nested lookups: see the <a href="/spf/#lookups">10-lookup limit</a>.</p>
+<p>Other clouds use other values: <code>include:spf.protection.office365.us</code> for GCC High and DoD, <code>include:spf.protection.partner.outlook.cn</code> for Microsoft 365 operated by 21Vianet.</p>
+
+<h2 id="dkim">2. DKIM</h2>
+<h3>Get the two CNAME records</h3>
+<ol>
+<li>Open the Microsoft Defender portal at <code>security.microsoft.com</code>.</li>
+<li>Go to <strong>Email &amp; collaboration &gt; Policies &amp; rules &gt; Threat policies &gt; Email authentication settings</strong> and open the <strong>DKIM</strong> tab.</li>
+<li>Select your custom domain. The details pane shows the two CNAME records to publish.</li>
+</ol>
+<p>They look like one of these two formats. Always copy the exact values shown for your domain.</p>
+<p><strong>New format</strong> (custom domains added since May 2025):</p>
+<pre><code>selector1._domainkey  CNAME  selector1-example-com._domainkey.contoso.n-v1.dkim.mail.microsoft
+selector2._domainkey  CNAME  selector2-example-com._domainkey.contoso.n-v1.dkim.mail.microsoft</code></pre>
+<p><strong>Older format</strong> (existing domains):</p>
+<pre><code>selector1._domainkey  CNAME  selector1-example-com._domainkey.contoso.onmicrosoft.com
+selector2._domainkey  CNAME  selector2-example-com._domainkey.contoso.onmicrosoft.com</code></pre>
+<p>Here <code>example-com</code> is your domain with dots replaced by dashes, and <code>contoso</code> is your tenant's initial domain prefix. In the new format, the letter before <code>-v1</code> is assigned by Microsoft. Microsoft states that the two formats cannot coexist for the same selector.</p>
+<h3>Enable signing</h3>
+<p>Once the CNAMEs are published, return to the DKIM tab, select the domain and turn on <strong>Sign messages for this domain with DKIM signatures</strong>. If the portal reports that the CNAME records are missing, wait for DNS propagation and try again.</p>
+<p>In Exchange Online PowerShell, the same configuration is managed with <code>Get-DkimSigningConfig</code>, <code>New-DkimSigningConfig</code> and <code>Set-DkimSigningConfig</code>. Keys are 1024 bits by default; 2048 is available, and <code>Rotate-DkimSigningConfig</code> switches between the two selectors.</p>
+<p>Check the result with selector <code>selector1</code> in step 3 of the <a href="/#check">checker</a>: it follows the CNAME to Microsoft's key.</p>
+
+<h2 id="dmarc">3. DMARC</h2>
+<p>Publish a monitoring record first:</p>
+<div class="tbl"><table>
+<tbody>
+<tr><th>Type</th><td>TXT</td></tr>
+<tr><th>Host / Name</th><td><code>_dmarc</code></td></tr>
+<tr><th>Value</th><td><code>v=DMARC1; p=none; rua=mailto:dmarc-reports@yourdomain.com</code></td></tr>
+</tbody></table></div>
+<p>Then follow the <a href="/dmarc/#rollout">rollout</a> to <code>quarantine</code> and <code>reject</code>. Microsoft also applies requirements to high-volume senders delivering to Outlook.com, Hotmail and Live addresses, so this matters even if your own users are on Microsoft 365.</p>
+
+<h2 id="problems">Common problems</h2>
+<h3>"CNAME record does not exist" in the portal</h3>
+<p>The records are not visible yet, or were published under the wrong name. Some DNS panels append the domain automatically, so enter only <code>selector1._domainkey</code> as the host. If your DNS is behind Cloudflare, keep these records in DNS-only mode.</p>
+<h3>Hybrid or third-party gateway breaks DKIM</h3>
+<p>If outgoing mail passes through an on-premises Exchange server or a filtering gateway that modifies messages after Microsoft signs them, the signature breaks. See <a href="/dkim/#errors">body hash did not verify</a>.</p>
+
+<p class="note">Sources: Microsoft Learn, <a href="https://learn.microsoft.com/en-us/defender-office-365/email-authentication-spf-configure" rel="noopener">Set up SPF</a> and <a href="https://learn.microsoft.com/en-us/defender-office-365/email-authentication-dkim-configure" rel="noopener">Set up DKIM</a> for Microsoft 365.</p>
+
+{{cta}}

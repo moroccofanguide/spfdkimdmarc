@@ -1,0 +1,55 @@
+{"path":"/guides/ovhcloud/","type":"article","title":"SPF, DKIM and DMARC for OVHcloud email","seo_title":"OVHcloud SPF, DKIM and DMARC Setup: MX Plan, Email Pro, Exchange","description":"Set up SPF, DKIM and DMARC for OVHcloud MX Plan, Email Pro and Exchange: the mx.ovh.com SPF include, enabling DKIM from the Control Panel, the CNAME records and DMARC.","crumb":"OVHcloud","short":"MX Plan, Email Pro and Exchange: SPF and DKIM.","published":"2026-10-18","updated":"2026-10-18","related":["/guides/microsoft-365/","/spf/","/dkim/"],"faq":[["Is DKIM configured automatically at OVHcloud?","When the domain's DNS zone is managed in the same OVHcloud account as the email service, OVHcloud proposes and performs the DKIM configuration by default. If your DNS is elsewhere, you add the two CNAME records yourself."],["Which SPF include covers Private Exchange?","Private Exchange uses its own server addresses, so OVHcloud documents ip4 and ip6 entries for it instead. Add include:mx.ovh.com only if you also use a shared offer."],["What about mail sent by my OVHcloud web hosting?","Scripts on a web hosting plan (contact forms, WordPress notifications) do not necessarily use the same servers as your mailboxes. The most reliable fix is to make the website send through an authenticated mailbox over SMTP."]]}
+<p>OVHcloud offers several email services on the same domain: MX Plan (included with web hosting), Email Pro, Hosted Exchange and Private Exchange. SPF uses one include for the shared offers, and DKIM is enabled from the Control Panel. The details below follow the OVHcloud documentation.</p>
+
+<div class="toc"><strong>On this page</strong><ol>
+<li><a href="#spf">SPF</a></li>
+<li><a href="#dkim">DKIM</a></li>
+<li><a href="#dmarc">DMARC</a></li>
+<li><a href="#problems">Common problems</a></li>
+</ol></div>
+
+<h2 id="spf">1. SPF</h2>
+<p>For MX Plan, Email Pro and Hosted Exchange, OVHcloud uses:</p>
+<pre><code>v=spf1 include:mx.ovh.com ~all</code></pre>
+<p>In the OVHcloud DNS zone editor, the SPF form has an option to include OVHcloud email servers that produces exactly this record. OVHcloud strongly recommends <code>-all</code> once you are certain every legitimate sender is listed.</p>
+<p>Private Exchange does not use the shared servers: its record lists the server's own addresses with <code>ip4:</code> and <code>ip6:</code>, as shown in your Exchange service.</p>
+<p>If your domain also has Google Workspace or another provider, merge everything into one record. Two SPF records on the same domain is a frequent leftover when a domain moves away from MX Plan.</p>
+
+<h2 id="dkim">2. DKIM</h2>
+<p>OVHcloud supports DKIM on MX Plan, Email Pro, Exchange, Private Exchange and Zimbra. When the DNS zone is managed in the same OVHcloud Control Panel, the DKIM configuration is proposed and done by default. Otherwise, enable it as follows.</p>
+<h3>MX Plan</h3>
+<ol>
+<li>In the OVHcloud Control Panel, go to <strong>Web Cloud &gt; Domain names</strong> and select the domain.</li>
+<li>In the <strong>General information</strong> tab, click the red <strong>DKIM</strong> badge, then <strong>Validate</strong>.</li>
+</ol>
+<h3>Email Pro and Exchange</h3>
+<ol>
+<li>Open your Email Pro service, or <strong>Microsoft &gt; Exchange</strong> and your service.</li>
+<li>Open the <strong>Associated domains</strong> tab, click the red <strong>DKIM</strong> badge for your domain, then <strong>Validate</strong>.</li>
+</ol>
+<p>For Zimbra, the DKIM steps are under <strong>Zimbra Mail &gt; Domain</strong>, then the menu next to the domain, <strong>Diagnostics &gt; DKIM</strong>.</p>
+<h3>The records</h3>
+<p>OVHcloud publishes two CNAME records. Their names depend on the offer (<code>ovhmo…</code> for MX Plan, <code>ovhex…</code> for Exchange, <code>ovhemp…</code> for Email Pro) and look like this:</p>
+<pre><code>ovhmo3456789-selector1._domainkey  CNAME  ovhmo3456789-selector1._domainkey.123403.aj.dkim.mail.ovh.net.
+ovhmo3456789-selector2._domainkey  CNAME  ovhmo3456789-selector2._domainkey.123403.aj.dkim.mail.ovh.net.</code></pre>
+<p>The numbers are specific to your service: copy the values shown in the Control Panel. If your DNS is hosted outside OVHcloud (Cloudflare, your registrar), add both CNAMEs there. Activation takes between 30 minutes and 24 hours.</p>
+<p>To check it, use the selector part before <code>._domainkey</code>, for example <code>ovhmo3456789-selector1</code>, in step 3 of the <a href="/#check">checker</a>.</p>
+
+<h2 id="dmarc">3. DMARC</h2>
+<div class="tbl"><table>
+<tbody>
+<tr><th>Type</th><td>TXT</td></tr>
+<tr><th>Host / Name</th><td><code>_dmarc</code></td></tr>
+<tr><th>Value</th><td><code>v=DMARC1; p=none; rua=mailto:dmarc-reports@yourdomain.com</code></td></tr>
+</tbody></table></div>
+<p>In the OVHcloud DNS zone, add it as a TXT record on the <code>_dmarc</code> subdomain. Then follow the <a href="/dmarc/#rollout">rollout</a> to <code>quarantine</code> and <code>reject</code>.</p>
+
+<h2 id="problems">Common problems</h2>
+<h3>Website mail fails SPF</h3>
+<p>Contact forms and CMS notifications sent with PHP <code>mail()</code> from a web hosting plan may not leave through the servers covered by <code>mx.ovh.com</code>. Configure the website (an SMTP plugin for WordPress, the mailer settings in PrestaShop or Laravel) to send through an authenticated mailbox instead.</p>
+<h3>The DKIM badge stays red</h3>
+<p>If the DNS zone is not at OVHcloud, the CNAMEs must be added manually at your DNS host. With Cloudflare, keep them in DNS-only mode, not proxied.</p>
+
+<p class="note">Sources: OVHcloud documentation, <a href="https://docs.ovhcloud.com/en/guides/web-cloud/domains/dns-zone-spf" rel="noopener">Configure an SPF record</a> and <a href="https://docs.ovhcloud.com/en/guides/web-cloud/domains/dns-zone-dkim" rel="noopener">Configure DKIM</a>.</p>
+
+{{cta}}

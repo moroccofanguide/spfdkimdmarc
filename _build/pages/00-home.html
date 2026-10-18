@@ -1,0 +1,70 @@
+{"path": "/", "type": "home", "title": "SPF, DKIM & DMARC checker and record generator", "seo_title": "SPF, DKIM & DMARC Checker and Record Generator", "description": "Check your domain's SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser.", "published": "2026-10-18", "updated": "2026-10-18", "faq": [["Can I have two SPF records?", "No. A domain must publish a single TXT record starting with <code>v=spf1</code>. Two records make SPF fail with a permanent error. Merge every service into one record, as the generator does. <a href=\"/spf/\">More on SPF</a>."], ["Why is my email still going to spam?", "SPF, DKIM and DMARC prove that mail really comes from you, but content, sending reputation, complaint rates and blocklists also matter. Fix authentication first, then look at the rest."], ["~all or -all?", "Google recommends <code>~all</code>, Microsoft recommends <code>-all</code>. Start with <code>~all</code>, and switch to <code>-all</code> once you are sure every legitimate sender is in the record."], ["Do I need all three?", "Yes, if you send any volume. Gmail and Yahoo require SPF and DKIM plus a DMARC record from senders of more than 5,000 messages a day, and even small senders get better delivery with all three in place."], ["Where do I find my DKIM selector?", "Open a message you sent, view its original headers, and look for the <code>s=</code> value in the <code>DKIM-Signature</code> header. Google Workspace uses <code>google</code> by default and Microsoft 365 uses <code>selector1</code> and <code>selector2</code>."], ["How long until DNS changes are visible?", "Usually minutes, sometimes a few hours depending on the record's TTL. Run the check again later if a new record does not show up yet."]]}
+<header class="top">
+  <h1>SPF, DKIM &amp; DMARC checker and record generator</h1>
+  <p class="lead">Enter your domain, pick the services that send your email, and get the exact DNS records to publish. Everything runs in your browser: nothing is stored.</p>
+</header>
+
+<section class="panel" id="check" aria-labelledby="h-check">
+  <h2 id="h-check"><span class="step">1</span>Check your domain</h2>
+  <p class="hint">We read your public DNS (MX, SPF and DMARC) using DNS-over-HTTPS.</p>
+  <form id="f-check" class="row">
+    <input id="domain" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="example.com" aria-label="Domain name">
+    <button id="b-check" type="submit">Check</button>
+  </form>
+  <div id="r-check" aria-live="polite"></div>
+</section>
+
+<section class="panel" aria-labelledby="h-spf">
+  <h2 id="h-spf"><span class="step">2</span>Generate your SPF record</h2>
+  <p class="hint">Tick every service that sends email with your domain in the From address. Detected providers are pre-selected after a check.</p>
+  <div class="grid" id="providers"></div>
+  <div class="field"><span>Other services (optional)</span><input id="extra-inc" type="text" spellcheck="false" placeholder="include:sendgrid.net, include:mailgun.org"></div>
+  <div class="field"><span>Your own servers' IPs (optional)</span><input id="extra-ip" type="text" spellcheck="false" placeholder="203.0.113.10, 2001:db8::1"></div>
+  <div class="field"><span>Policy for everything else</span>
+    <select id="spf-all"><option value="~all">~all (soft fail, recommended to start)</option><option value="-all">-all (hard fail, once everything is listed)</option></select>
+  </div>
+  <div id="r-spf"></div>
+</section>
+
+<section class="panel" aria-labelledby="h-dkim">
+  <h2 id="h-dkim"><span class="step">3</span>Set up and verify DKIM</h2>
+  <p class="hint">DKIM keys are created by your email provider, not by you. Follow the steps for each service, then check the record is published.</p>
+  <div id="dkim-help"></div>
+  <form id="f-dkim" class="row" style="margin-top:10px">
+    <input id="selector" type="text" spellcheck="false" placeholder="DKIM selector, e.g. google or selector1" aria-label="DKIM selector">
+    <button id="b-dkim" type="submit">Verify DKIM</button>
+  </form>
+  <div id="r-dkim" aria-live="polite"></div>
+</section>
+
+<section class="panel" aria-labelledby="h-dmarc">
+  <h2 id="h-dmarc"><span class="step">4</span>Generate your DMARC record</h2>
+  <p class="hint">Start with <code>p=none</code> to monitor, then move to <code>quarantine</code> and <code>reject</code> once SPF and DKIM pass for all your senders.</p>
+  <div class="field"><span>Policy</span>
+    <select id="dm-p"><option value="none">none (monitor only)</option><option value="quarantine">quarantine (send to spam)</option><option value="reject">reject (block)</option></select>
+  </div>
+  <div class="field"><span>Where to send aggregate reports (optional)</span><input id="dm-rua" type="text" spellcheck="false" placeholder="dmarc-reports@example.com"></div>
+  <div id="r-dmarc"></div>
+</section>
+
+<section class="panel" aria-labelledby="h-what">
+  <h2 id="h-what">What these three records do</h2>
+  <p>Email was designed without any proof of who sent a message. SPF, DKIM and DMARC are three DNS records that add that proof. Receiving servers such as Gmail and Outlook read them on every message to decide whether it is genuine, suspicious or forged.</p>
+  <div class="cards">
+    <a class="card" href="/spf/"><strong>SPF</strong><span>A list of the servers allowed to send mail for your domain. Published as one TXT record on the domain itself.</span></a>
+    <a class="card" href="/dkim/"><strong>DKIM</strong><span>A cryptographic signature added to each message. The public key lives in DNS under a selector.</span></a>
+    <a class="card" href="/dmarc/"><strong>DMARC</strong><span>Ties SPF and DKIM to the From address, tells receivers what to do with failures, and sends you reports.</span></a>
+  </div>
+  <p>Since February 2024, Gmail and Yahoo require SPF or DKIM from every sender, and SPF, DKIM and a DMARC record from anyone sending more than 5,000 messages a day. Microsoft announced comparable rules for Outlook.com addresses in 2025. Mail that fails these checks is sent to spam or rejected.</p>
+</section>
+
+<section class="panel" aria-labelledby="h-guides">
+  <h2 id="h-guides">Step-by-step guides by provider</h2>
+  <p class="hint">Where to click, which records to publish and what usually goes wrong.</p>
+  <div class="cards">
+    <a class="card" href="/guides/google-workspace/"><strong>Google Workspace</strong><span>SPF include, the google._domainkey key and DMARC.</span></a>
+    <a class="card" href="/guides/microsoft-365/"><strong>Microsoft 365</strong><span>SPF, the two DKIM CNAMEs and the Defender portal.</span></a>
+    <a class="card" href="/guides/zoho-mail/"><strong>Zoho Mail</strong><span>SPF, adding and verifying a DKIM selector.</span></a>
+    <a class="card" href="/guides/ovhcloud/"><strong>OVHcloud</strong><span>MX Plan, Email Pro and Exchange: SPF and DKIM.</span></a>
+  </div>
+</section>

@@ -1,0 +1,77 @@
+{"path":"/spf/","type":"article","title":"SPF record: syntax, examples and the 10-lookup limit","seo_title":"SPF Record Explained: Syntax, Examples and the 10 DNS Lookup Limit","description":"How an SPF record works, what each mechanism means, ready-to-use examples, why you can only have one record, and how to stay under the 10 DNS lookup limit.","crumb":"SPF","short":"Syntax, examples, ~all vs -all and the 10-lookup limit.","published":"2026-10-18","updated":"2026-10-18","related":["/dkim/","/dmarc/","/guides/google-workspace/"],"faq":[["Does SPF protect the From address people see?","Not on its own. SPF checks the envelope sender (the Return-Path), which users never see. DMARC is what links the SPF result to the visible From domain."],["Is there a maximum length for an SPF record?","A single TXT string is limited to 255 characters, but a record can be split into several strings that receivers join together. Most DNS panels do this for you. Keeping the record short also keeps DNS responses small."],["Do subdomains inherit the SPF record?","No. SPF is checked on the exact domain used in the envelope sender. If a service sends from news.example.com, that subdomain needs its own record."],["What does SPF PermError mean?","The record could not be evaluated: usually two SPF records on the same domain, more than 10 DNS lookups, or a syntax error. Receivers treat it as a failure."]]}
+<p>SPF (Sender Policy Framework) is a TXT record on your domain that lists the servers allowed to send email for it. When a message arrives, the receiving server looks up that record and checks whether the connecting IP address is on the list. It is the oldest and simplest of the three checks, and also the easiest to break.</p>
+
+<div class="toc"><strong>On this page</strong><ol>
+<li><a href="#how">What SPF actually checks</a></li>
+<li><a href="#syntax">Record syntax</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#one">Only one SPF record per domain</a></li>
+<li><a href="#lookups">The 10 DNS lookup limit</a></li>
+<li><a href="#all">~all or -all</a></li>
+<li><a href="#nosend">Domains that never send email</a></li>
+</ol></div>
+
+<h2 id="how">What SPF actually checks</h2>
+<p>SPF does not look at the From address shown in the mail client. It checks the <strong>envelope sender</strong>, also called the Return-Path or MAIL FROM: the address bounces go back to. When you send through a newsletter platform, that envelope address usually belongs to the platform, not to you, so your own SPF record is not even consulted.</p>
+<p>This is why SPF alone does not stop spoofing of your visible From address, and why <a href="/dmarc/">DMARC</a> exists: it requires the domain that passed SPF (or DKIM) to match the From domain.</p>
+
+<h2 id="syntax">Record syntax</h2>
+<p>An SPF record is a TXT record published on the domain itself (host <code>@</code> in most DNS panels). It starts with <code>v=spf1</code>, lists mechanisms, and ends with a rule for everything else.</p>
+<pre><code>v=spf1 include:_spf.google.com ip4:203.0.113.10 ~all</code></pre>
+<div class="tbl"><table>
+<thead><tr><th>Mechanism</th><th>Meaning</th><th>DNS lookup?</th></tr></thead>
+<tbody>
+<tr><td><code>include:domain</code></td><td>Also authorize the servers listed in another domain's SPF record. This is how you add a provider.</td><td>Yes, plus any lookups inside it</td></tr>
+<tr><td><code>ip4:</code> / <code>ip6:</code></td><td>Authorize an address or a range, for example <code>ip4:203.0.113.0/24</code>.</td><td>No</td></tr>
+<tr><td><code>a</code></td><td>Authorize the IP addresses of the domain's A/AAAA records.</td><td>Yes</td></tr>
+<tr><td><code>mx</code></td><td>Authorize the domain's MX servers.</td><td>Yes, and more per MX host</td></tr>
+<tr><td><code>exists:</code></td><td>Advanced macro-based check, rarely needed.</td><td>Yes</td></tr>
+<tr><td><code>ptr</code></td><td>Reverse DNS check. Deprecated by RFC 7208: do not use it.</td><td>Yes</td></tr>
+<tr><td><code>redirect=</code></td><td>Use another domain's SPF record instead of this one.</td><td>Yes</td></tr>
+<tr><td><code>all</code></td><td>Matches everything not matched before. Always last.</td><td>No</td></tr>
+</tbody></table></div>
+<p>Each mechanism can take a qualifier: <code>+</code> pass (the default), <code>-</code> fail, <code>~</code> soft fail, <code>?</code> neutral. In practice you only write a qualifier on <code>all</code>. Never publish <code>+all</code>: it authorizes every server on the internet.</p>
+
+<h2 id="examples">Examples</h2>
+<h3>Google Workspace only</h3>
+<pre><code>v=spf1 include:_spf.google.com ~all</code></pre>
+<h3>Microsoft 365 only</h3>
+<pre><code>v=spf1 include:spf.protection.outlook.com -all</code></pre>
+<h3>Zoho Mail only</h3>
+<pre><code>v=spf1 include:zohomail.com ~all</code></pre>
+<h3>OVHcloud email (MX Plan, Email Pro, Exchange)</h3>
+<pre><code>v=spf1 include:mx.ovh.com ~all</code></pre>
+<h3>Google Workspace plus your own web server</h3>
+<p>Typical when a website (WordPress, PrestaShop, a Laravel app) sends contact forms or order emails directly from its server:</p>
+<pre><code>v=spf1 include:_spf.google.com ip4:203.0.113.10 ~all</code></pre>
+<p>Replace the address with your server's public outgoing IP. Prefer <code>ip4:</code> over <code>a</code> here: it costs no DNS lookup and does not change silently if the website moves.</p>
+<p>The <a href="/#check">generator</a> builds the right combination for you from the services you tick.</p>
+
+<h2 id="one">Only one SPF record per domain</h2>
+<p>This is the most common mistake we see. A domain must publish exactly one TXT record starting with <code>v=spf1</code>. When a second provider is added, many people create a second record instead of editing the first one. With two records, receivers return a <strong>PermError</strong> and SPF fails for every message, including the ones that were fine before.</p>
+<div class="callout">Wrong: two records<br><code>v=spf1 include:_spf.google.com ~all</code><br><code>v=spf1 include:mx.ovh.com ~all</code></div>
+<div class="callout ok">Right: one merged record<br><code>v=spf1 include:_spf.google.com include:mx.ovh.com ~all</code></div>
+<p>Other TXT records on the same name (Google site verification, Facebook domain verification and so on) are not a problem. Only records starting with <code>v=spf1</code> count.</p>
+
+<h2 id="lookups">The 10 DNS lookup limit</h2>
+<p>To evaluate your record, a receiver may perform at most 10 DNS lookups (RFC 7208, section 4.6.4). The mechanisms that cost a lookup are <code>include</code>, <code>a</code>, <code>mx</code>, <code>ptr</code>, <code>exists</code> and <code>redirect</code>. Lookups inside included records count too: one <code>include</code> can cost three or four lookups on its own. Past 10, the result is PermError and SPF fails.</p>
+<p>The same section also limits <strong>void lookups</strong> (names that return nothing) to two, so an include pointing at a provider you stopped using years ago can break the record too.</p>
+<h3>How to get back under the limit</h3>
+<ul>
+<li>Remove services you no longer use. Old CRMs, newsletter tools and helpdesks are frequent leftovers.</li>
+<li>Replace <code>a</code> and <code>mx</code> with <code>ip4:</code> and <code>ip6:</code> for servers you control. IP mechanisms cost nothing.</li>
+<li>Check whether a service needs your SPF at all. Many bulk senders use their own envelope domain and rely on DKIM for DMARC alignment, so their include in your record is useless.</li>
+<li>Move a heavy sender to a subdomain, for example <code>mail.example.com</code>, with its own SPF record.</li>
+</ul>
+<p>"SPF flattening", replacing includes with the IP addresses they resolve to, also reduces lookups, but the provider's IPs change without notice and your record silently goes stale. Only do it with a tool that updates the record automatically.</p>
+
+<h2 id="all">~all or -all</h2>
+<p>Both mark unlisted servers as unauthorized. <code>~all</code> (soft fail) asks receivers to accept the message but treat it as suspicious. <code>-all</code> (hard fail) says it should be rejected.</p>
+<p>The providers do not agree: Google recommends <code>~all</code>, Microsoft recommends <code>-all</code>, and OVHcloud strongly recommends <code>-all</code> once you are sure the record is complete. A safe path is to start with <code>~all</code>, read your DMARC reports for a few weeks to find any sender you forgot, then switch to <code>-all</code>. Once DMARC is enforced, the difference matters less: DMARC decides what happens to failing mail.</p>
+
+<h2 id="nosend">Domains that never send email</h2>
+<p>Parked domains and domains used only for a website are easy targets for spoofing. Tell the world they never send mail:</p>
+<pre><code>v=spf1 -all</code></pre>
+<p>Combine it with a DMARC <code>p=reject</code> record, described in the <a href="/dmarc/#parked">DMARC guide</a>.</p>
+
+{{cta}}

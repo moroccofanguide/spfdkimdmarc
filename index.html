@@ -3,80 +3,29 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SPF, DKIM & DMARC Checker and Record Generator</title>
-<meta name="description" content="Check your domain's SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser.">
+<title>SPF, DKIM &amp; DMARC Checker and Record Generator</title>
+<meta name="description" content="Check your domain&#x27;s SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser.">
 <link rel="canonical" href="https://spfdkimdmarc.com/">
 <meta property="og:type" content="website">
-<meta property="og:title" content="SPF, DKIM & DMARC Checker and Record Generator">
-<meta property="og:description" content="Check your SPF, DKIM and DMARC records and get the exact DNS entries to fix them.">
+<meta property="og:title" content="SPF, DKIM &amp; DMARC Checker and Record Generator">
+<meta property="og:description" content="Check your domain&#x27;s SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser.">
 <meta property="og:url" content="https://spfdkimdmarc.com/">
+<meta property="og:site_name" content="spfdkimdmarc.com">
 <meta name="theme-color" content="#0f172a">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f766e'/%3E%3Cpath d='M8 11h16v10H8z' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M8 11l8 6 8-6' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SPF, DKIM & DMARC Checker and Record Generator","url":"https://spfdkimdmarc.com/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Check a domain's SPF, DKIM and DMARC DNS records and generate the correct entries for common email providers."}</script>
-<style>
-:root{
-  --bg:#f8fafc; --panel:#ffffff; --ink:#0f172a; --text:#334155; --muted:#64748b; --line:#e2e8f0;
-  --accent:#0f766e; --accent-ink:#ffffff; --code:#f1f5f9;
-  --ok:#15803d; --ok-bg:#f0fdf4; --warn:#b45309; --warn-bg:#fffbeb; --bad:#b91c1c; --bad-bg:#fef2f2;
-  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
-  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-}
-@media (prefers-color-scheme: dark){
-  :root{ --bg:#0b1220; --panel:#111a2e; --ink:#f1f5f9; --text:#cbd5e1; --muted:#94a3b8; --line:#23304a;
-    --accent:#2dd4bf; --accent-ink:#04201d; --code:#0b1426;
-    --ok:#4ade80; --ok-bg:#0d2a1a; --warn:#fbbf24; --warn-bg:#2a210b; --bad:#f87171; --bad-bg:#2c1212; }
-}
-*{box-sizing:border-box}
-html,body{overflow-x:hidden}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
-.wrap{max-width:860px;margin:0 auto;padding:0 16px}
-header.top{padding:28px 0 8px}
-.brand{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:.95rem;letter-spacing:.02em}
-h1{color:var(--ink);font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1.15;margin:.4em 0 .3em}
-.lead{color:var(--muted);margin:0 0 18px;max-width:640px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin:16px 0}
-.panel h2{color:var(--ink);font-size:1.15rem;margin:0 0 4px;display:flex;align-items:center;gap:10px}
-.step{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:.85rem;font-weight:700;flex:none}
-.hint{color:var(--muted);font-size:.92rem;margin:0 0 12px}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-input[type=text],select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
-input[type=text]{flex:1 1 220px}
-button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:10px 16px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
-button.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);padding:6px 10px;font-size:.85rem}
-button:disabled{opacity:.6;cursor:wait}
-label.chk{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--bg)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:8px 0 12px}
-.field{display:flex;flex-direction:column;gap:4px;margin:8px 0}
-.field input,.field select{flex:none;width:100%}
-.field span{font-size:.88rem;font-weight:600;color:var(--ink)}
-.status{border-radius:8px;padding:10px 12px;margin:8px 0;font-size:.95rem}
-.status b{display:block;color:inherit}
-.status.ok{background:var(--ok-bg);color:var(--ok)}
-.status.warn{background:var(--warn-bg);color:var(--warn)}
-.status.bad{background:var(--bad-bg);color:var(--bad)}
-.status .detail{color:var(--text);font-size:.88rem;margin-top:4px;overflow-wrap:anywhere}
-.rec{border:1px solid var(--line);border-radius:10px;margin:10px 0;overflow:hidden}
-.rec .head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.88rem;flex-wrap:wrap}
-.rec .head span{color:var(--muted)} .rec .head strong{color:var(--ink)}
-.rec code{display:block;font:14px/1.5 var(--mono);background:var(--code);color:var(--ink);padding:12px;overflow-wrap:anywhere;white-space:pre-wrap}
-.note{font-size:.88rem;color:var(--muted)}
-ul.steps{margin:6px 0 0;padding-left:20px} ul.steps li{margin:4px 0}
-details{margin:6px 0} summary{cursor:pointer;font-weight:600;color:var(--ink)}
-footer{color:var(--muted);font-size:.85rem;padding:24px 0 40px}
-footer a,.panel a{color:var(--accent)}
-.faq h3{color:var(--ink);font-size:1rem;margin:16px 0 4px}
-.faq p{margin:0}
-</style>
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SPF, DKIM & DMARC Checker and Record Generator","url":"https://spfdkimdmarc.com/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Check your domain's SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I have two SPF records?","acceptedAnswer":{"@type":"Answer","text":"No. A domain must publish a single TXT record starting with v=spf1. Two records make SPF fail with a permanent error. Merge every service into one record, as the generator does. More on SPF."}},{"@type":"Question","name":"Why is my email still going to spam?","acceptedAnswer":{"@type":"Answer","text":"SPF, DKIM and DMARC prove that mail really comes from you, but content, sending reputation, complaint rates and blocklists also matter. Fix authentication first, then look at the rest."}},{"@type":"Question","name":"~all or -all?","acceptedAnswer":{"@type":"Answer","text":"Google recommends ~all, Microsoft recommends -all. Start with ~all, and switch to -all once you are sure every legitimate sender is in the record."}},{"@type":"Question","name":"Do I need all three?","acceptedAnswer":{"@type":"Answer","text":"Yes, if you send any volume. Gmail and Yahoo require SPF and DKIM plus a DMARC record from senders of more than 5,000 messages a day, and even small senders get better delivery with all three in place."}},{"@type":"Question","name":"Where do I find my DKIM selector?","acceptedAnswer":{"@type":"Answer","text":"Open a message you sent, view its original headers, and look for the s= value in the DKIM-Signature header. Google Workspace uses google by default and Microsoft 365 uses selector1 and selector2."}},{"@type":"Question","name":"How long until DNS changes are visible?","acceptedAnswer":{"@type":"Answer","text":"Usually minutes, sometimes a few hours depending on the record's TTL. Run the check again later if a new record does not show up yet."}}]}</script>
 </head>
 <body>
 <div class="wrap">
+<nav class="nav" aria-label="Main"><a class="brand" href="/">spfdkimdmarc.com</a><ul><li><a href="/" aria-current="page">Checker</a></li><li><a href="/spf/">SPF</a></li><li><a href="/dkim/">DKIM</a></li><li><a href="/dmarc/">DMARC</a></li><li><a href="/guides/">Guides</a></li></ul></nav>
 <header class="top">
-  <div class="brand">spfdkimdmarc.com</div>
   <h1>SPF, DKIM &amp; DMARC checker and record generator</h1>
   <p class="lead">Enter your domain, pick the services that send your email, and get the exact DNS records to publish. Everything runs in your browser: nothing is stored.</p>
 </header>
 
-<section class="panel" aria-labelledby="h-check">
+<section class="panel" id="check" aria-labelledby="h-check">
   <h2 id="h-check"><span class="step">1</span>Check your domain</h2>
   <p class="hint">We read your public DNS (MX, SPF and DMARC) using DNS-over-HTTPS.</p>
   <form id="f-check" class="row">
@@ -119,36 +68,50 @@ footer a,.panel a{color:var(--accent)}
   <div id="r-dmarc"></div>
 </section>
 
-<section class="panel faq" aria-labelledby="h-faq">
-  <h2 id="h-faq">Questions</h2>
-  <h3>Can I have two SPF records?</h3>
-  <p>No. A domain must publish a single TXT record starting with <code>v=spf1</code>. Two records make SPF fail. Merge every service into one record, as the generator does.</p>
-  <h3>Why is my email still going to spam?</h3>
-  <p>SPF, DKIM and DMARC prove that mail really comes from you, but content, sending reputation and blocklists also matter. Fix authentication first, then look at the rest.</p>
-  <h3>~all or -all?</h3>
-  <p>Google recommends <code>~all</code>, Microsoft recommends <code>-all</code>. Start with <code>~all</code>, and switch to <code>-all</code> once you are sure every legitimate sender is in the record.</p>
-  <h3>How long until DNS changes are visible?</h3>
-  <p>Usually minutes, sometimes a few hours depending on the record's TTL. Run the check again later if a new record does not show up yet.</p>
+<section class="panel" aria-labelledby="h-what">
+  <h2 id="h-what">What these three records do</h2>
+  <p>Email was designed without any proof of who sent a message. SPF, DKIM and DMARC are three DNS records that add that proof. Receiving servers such as Gmail and Outlook read them on every message to decide whether it is genuine, suspicious or forged.</p>
+  <div class="cards">
+    <a class="card" href="/spf/"><strong>SPF</strong><span>A list of the servers allowed to send mail for your domain. Published as one TXT record on the domain itself.</span></a>
+    <a class="card" href="/dkim/"><strong>DKIM</strong><span>A cryptographic signature added to each message. The public key lives in DNS under a selector.</span></a>
+    <a class="card" href="/dmarc/"><strong>DMARC</strong><span>Ties SPF and DKIM to the From address, tells receivers what to do with failures, and sends you reports.</span></a>
+  </div>
+  <p>Since February 2024, Gmail and Yahoo require SPF or DKIM from every sender, and SPF, DKIM and a DMARC record from anyone sending more than 5,000 messages a day. Microsoft announced comparable rules for Outlook.com addresses in 2025. Mail that fails these checks is sent to spam or rejected.</p>
 </section>
 
-<footer>
-  <p>Provider values come from official documentation: <a href="https://knowledge.workspace.google.com/admin/security/set-up-spf" rel="noopener">Google Workspace</a>, <a href="https://learn.microsoft.com/en-us/defender-office-365/email-authentication-spf-configure" rel="noopener">Microsoft 365</a>, <a href="https://www.zoho.com/mail/help/adminconsole/spf-configuration.html" rel="noopener">Zoho Mail</a>, <a href="https://docs.ovhcloud.com/en/guides/web-cloud/domains/dns-zone-spf" rel="noopener">OVHcloud</a>. Always confirm in your provider's admin console.</p>
-  <p>DNS lookups are made from your browser to Cloudflare's public DNS-over-HTTPS resolver. No data is stored by this site.</p>
-</footer>
-</div>
+<section class="panel" aria-labelledby="h-guides">
+  <h2 id="h-guides">Step-by-step guides by provider</h2>
+  <p class="hint">Where to click, which records to publish and what usually goes wrong.</p>
+  <div class="cards">
+    <a class="card" href="/guides/google-workspace/"><strong>Google Workspace</strong><span>SPF include, the google._domainkey key and DMARC.</span></a>
+    <a class="card" href="/guides/microsoft-365/"><strong>Microsoft 365</strong><span>SPF, the two DKIM CNAMEs and the Defender portal.</span></a>
+    <a class="card" href="/guides/zoho-mail/"><strong>Zoho Mail</strong><span>SPF, adding and verifying a DKIM selector.</span></a>
+    <a class="card" href="/guides/ovhcloud/"><strong>OVHcloud</strong><span>MX Plan, Email Pro and Exchange: SPF and DKIM.</span></a>
+  </div>
+</section>
 
+<section class="panel faq" aria-labelledby="h-faq"><h2 id="h-faq">Questions</h2>
+<h3>Can I have two SPF records?</h3><p>No. A domain must publish a single TXT record starting with <code>v=spf1</code>. Two records make SPF fail with a permanent error. Merge every service into one record, as the generator does. <a href="/spf/">More on SPF</a>.</p>
+<h3>Why is my email still going to spam?</h3><p>SPF, DKIM and DMARC prove that mail really comes from you, but content, sending reputation, complaint rates and blocklists also matter. Fix authentication first, then look at the rest.</p>
+<h3>~all or -all?</h3><p>Google recommends <code>~all</code>, Microsoft recommends <code>-all</code>. Start with <code>~all</code>, and switch to <code>-all</code> once you are sure every legitimate sender is in the record.</p>
+<h3>Do I need all three?</h3><p>Yes, if you send any volume. Gmail and Yahoo require SPF and DKIM plus a DMARC record from senders of more than 5,000 messages a day, and even small senders get better delivery with all three in place.</p>
+<h3>Where do I find my DKIM selector?</h3><p>Open a message you sent, view its original headers, and look for the <code>s=</code> value in the <code>DKIM-Signature</code> header. Google Workspace uses <code>google</code> by default and Microsoft 365 uses <code>selector1</code> and <code>selector2</code>.</p>
+<h3>How long until DNS changes are visible?</h3><p>Usually minutes, sometimes a few hours depending on the record's TTL. Run the check again later if a new record does not show up yet.</p>
+</section>
+<footer><div class="links"><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/guides/">Setup guides</a></div><p>Free SPF, DKIM and DMARC checker and record generator. Lookups run in your browser through public DNS-over-HTTPS resolvers; nothing is stored.</p></footer>
+</div>
 <script>
 (function(){
 "use strict";
 var PROVIDERS = [
   { id:"google", name:"Google Workspace", include:"include:_spf.google.com", mx:/(^|\.)(google\.com|googlemail\.com)\.?$/i,
-    dkim:["Google Admin console > Apps > Google Workspace > Gmail > Authenticate email.","Generate a new record (2048-bit if your DNS host accepts it). The default selector is <code>google</code>.","Publish the TXT record shown at <code>google._domainkey</code>, then click Start authentication."], selector:"google" },
+    dkim:["Google Admin console > Apps > Google Workspace > Gmail > Authenticate email.","Generate a new record (2048-bit if your DNS host accepts it). The default selector is <code>google</code>.","Publish the TXT record shown at <code>google._domainkey</code>, then click Start authentication. <a href=\"/guides/google-workspace/\">Full Google Workspace guide</a>."], selector:"google" },
   { id:"m365", name:"Microsoft 365", include:"include:spf.protection.outlook.com", mx:/mail\.protection\.outlook\.com\.?$/i,
-    dkim:["Microsoft Defender portal, in the email authentication settings, DKIM tab.","Publish the two CNAME records it gives you: <code>selector1._domainkey</code> and <code>selector2._domainkey</code>.","Back in the portal, enable DKIM signing for the domain."], selector:"selector1" },
+    dkim:["Microsoft Defender portal, in the email authentication settings, DKIM tab.","Publish the two CNAME records it gives you: <code>selector1._domainkey</code> and <code>selector2._domainkey</code>.","Back in the portal, enable DKIM signing for the domain. <a href=\"/guides/microsoft-365/\">Full Microsoft 365 guide</a>."], selector:"selector1" },
   { id:"zoho", name:"Zoho Mail", include:"include:zohomail.com", mx:/(^|\.)zoho(mail)?\.(com|eu|in|com\.au|jp|ca|sa)\.?$/i,
-    dkim:["Zoho Mail Admin Console > Domains > your domain > Email Configuration > DKIM.","Add a selector, copy the TXT value Zoho generates and publish it at <code>selector._domainkey</code>.","Click Verify in Zoho once the record is live."], selector:"" },
+    dkim:["Zoho Mail Admin Console > Domains > your domain > Email Configuration > DKIM.","Add a selector, copy the TXT value Zoho generates and publish it at <code>selector._domainkey</code>.","Click Verify in Zoho once the record is live, then enable DKIM. <a href=\"/guides/zoho-mail/\">Full Zoho Mail guide</a>."], selector:"" },
   { id:"ovh", name:"OVHcloud (MX Plan, Email Pro, Exchange)", include:"include:mx.ovh.com", mx:/(^|\.)ovh\.net\.?$/i,
-    dkim:["OVHcloud Control Panel > Web Cloud > Emails (or Email Pro / Exchange) > your service.","Enable DKIM: OVHcloud shows the selector records to publish (CNAME or TXT).","If your DNS zone is hosted at OVHcloud, the records can be added automatically."], selector:"" }
+    dkim:["MX Plan: Control Panel > Web Cloud > Domain names > your domain > General information, click the red DKIM badge. Email Pro or Exchange: open the service, Associated domains tab, DKIM badge.","If your DNS zone is at OVHcloud, the two CNAME records are added for you. Otherwise publish the two CNAMEs OVHcloud shows (selectors like <code>ovhmo…-selector1</code>).","Activation takes from 30 minutes to 24 hours. <a href=\"/guides/ovhcloud/\">Full OVHcloud guide</a>."], selector:"" }
 ];
 var $ = function(id){ return document.getElementById(id); };
 var esc = function(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); };
@@ -337,6 +300,15 @@ $("f-dkim").addEventListener("submit", async function(e){
 });
 
 renderSpf(); renderDmarc();
+
+/* Prefill from ?d=example.com (links from the guides) */
+try {
+  var qd = new URLSearchParams(location.search).get("d");
+  if (qd && cleanDomain(qd)){
+    $("domain").value = cleanDomain(qd);
+    $("f-check").requestSubmit ? $("f-check").requestSubmit() : $("b-check").click();
+  }
+} catch(e){}
 })();
 </script>
 </body>
