@@ -26,6 +26,11 @@ CTA = """<div class="cta">
 </div>"""
 
 
+import hashlib
+with open(os.path.join(ROOT, "assets", "style.css"), "rb") as _f:
+    CSS_VER = hashlib.sha1(_f.read()).hexdigest()[:8]
+
+
 def esc(s):
     return html.escape(s, quote=True)
 
@@ -98,10 +103,10 @@ def render(p, by_path):
     out.append('<meta property="og:image:width" content="1200">')
     out.append('<meta property="og:image:height" content="630">')
     out.append('<meta name="twitter:card" content="summary_large_image">')
-    out.append('<link rel="stylesheet" href="/assets/style.css">')
+    out.append('<link rel="stylesheet" href="/assets/style.css?v=%s">' % CSS_VER)
     out.extend(jsonld(o) for o in ld)
     out.append("</head>\n<body>\n<div class=\"wrap\">")
-    out.append('<nav class="nav" aria-label="Main"><a class="brand" href="/" aria-label="%s home"><img src="/assets/logo.svg" width="30" height="30" alt=""><span><b>spf</b><i>dkim</i><b>dmarc</b><em>.com</em></span></a><ul>%s</ul></nav>' % (NAME, nav))
+    out.append('<nav class="nav" aria-label="Main"><a class="brand" href="/" aria-label="%s home"><img src="/assets/logo.svg" width="30" height="30" alt=""><span class="wm"><span class="wm-a">spf</span><span class="wm-b">dkim</span><span class="wm-a">dmarc</span><span class="wm-c">.com</span></span></a><ul>%s</ul></nav>' % (NAME, nav))
 
     if p["type"] == "home":
         out.append(body)
