@@ -92,3 +92,8 @@ td code{white-space:nowrap}
 .card span{font-size:.92rem}
 .related{margin:28px 0 0}
 .faq h3{color:var(--ink);font-size:1rem;margin:16px 0 4px}
+.nav .brand{display:inline-flex;align-items:center;gap:9px;font-size:1.02rem;letter-spacing:-.2px}
+.nav .brand img{display:block;flex:none}
+.nav .brand b{font-weight:700;color:var(--ink)}
+.nav .brand i{font-style:normal;font-weight:700;color:var(--accent)}
+.nav .brand em{font-style:normal;font-weight:500;color:var(--muted)}

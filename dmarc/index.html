@@ -12,15 +12,20 @@
 <meta property="og:url" content="https://spfdkimdmarc.com/dmarc/">
 <meta property="og:site_name" content="spfdkimdmarc.com">
 <meta name="theme-color" content="#0f172a">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f766e'/%3E%3Cpath d='M8 11h16v10H8z' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M8 11l8 6 8-6' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="icon" type="image/svg+xml" href="/assets/logo.svg">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:image" content="https://spfdkimdmarc.com/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/assets/style.css">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://spfdkimdmarc.com/"},{"@type":"ListItem","position":2,"name":"DMARC","item":"https://spfdkimdmarc.com/dmarc/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"DMARC record: policies, reports and a safe rollout","description":"What DMARC does, every tag of the record explained, how alignment works, how to move from p=none to reject without losing mail, and what changed with RFC 9989.","url":"https://spfdkimdmarc.com/dmarc/","datePublished":"2026-10-18","dateModified":"2026-10-18","inLanguage":"en","author":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/about/"},"publisher":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"DMARC record: policies, reports and a safe rollout","description":"What DMARC does, every tag of the record explained, how alignment works, how to move from p=none to reject without losing mail, and what changed with RFC 9989.","url":"https://spfdkimdmarc.com/dmarc/","datePublished":"2026-10-18","dateModified":"2026-10-18","inLanguage":"en","author":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/about/"},"publisher":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/","logo":{"@type":"ImageObject","url":"https://spfdkimdmarc.com/assets/apple-touch-icon.png"}}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is p=none enough?","acceptedAnswer":{"@type":"Answer","text":"It is enough to meet the Gmail and Yahoo bulk sender requirements, but it does not protect your domain: spoofed mail is still delivered. Treat p=none as a monitoring phase, not a final state."}},{"@type":"Question","name":"Will DMARC break my email?","acceptedAnswer":{"@type":"Answer","text":"Not with p=none, which changes nothing about delivery. Problems appear only when you move to quarantine or reject before every legitimate sender passes SPF or DKIM with alignment. Read your reports first."}},{"@type":"Question","name":"Do I need a DMARC record on each subdomain?","acceptedAnswer":{"@type":"Answer","text":"No. Subdomains use the policy of the parent domain unless you set a different one with sp= or publish a record on the subdomain itself."}},{"@type":"Question","name":"Should I still use pct=?","acceptedAnswer":{"@type":"Answer","text":"RFC 9989 removed pct. Some receivers still honor it during the transition, but new records should use t=y for a test phase instead."}}]}</script>
 </head>
 <body>
 <div class="wrap">
-<nav class="nav" aria-label="Main"><a class="brand" href="/">spfdkimdmarc.com</a><ul><li><a href="/">Checker</a></li><li><a href="/spf/">SPF</a></li><li><a href="/dkim/">DKIM</a></li><li><a href="/dmarc/" aria-current="page">DMARC</a></li><li><a href="/guides/">Guides</a></li></ul></nav>
+<nav class="nav" aria-label="Main"><a class="brand" href="/" aria-label="spfdkimdmarc.com home"><img src="/assets/logo.svg" width="30" height="30" alt=""><span><b>spf</b><i>dkim</i><b>dmarc</b><em>.com</em></span></a><ul><li><a href="/">Checker</a></li><li><a href="/spf/">SPF</a></li><li><a href="/dkim/">DKIM</a></li><li><a href="/dmarc/" aria-current="page">DMARC</a></li><li><a href="/guides/">Guides</a></li></ul></nav>
 <p class="crumbs"><a href="/">Home</a> / DMARC</p>
 <article>
 <h1>DMARC record: policies, reports and a safe rollout</h1>

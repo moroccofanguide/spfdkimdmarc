@@ -17,10 +17,6 @@ NAME = "spfdkimdmarc.com"
 
 NAV = [("/", "Checker"), ("/spf/", "SPF"), ("/dkim/", "DKIM"), ("/dmarc/", "DMARC"), ("/guides/", "Guides")]
 
-ICON = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' "
-        "rx='7' fill='%230f766e'/%3E%3Cpath d='M8 11h16v10H8z' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath "
-        "d='M8 11l8 6 8-6' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E")
-
 CTA = """<div class="cta">
   <p><strong>Check your domain now.</strong> See your current SPF, DKIM and DMARC records and get the exact entries to fix them.</p>
   <form class="row" action="/" method="get">
@@ -73,7 +69,7 @@ def render(p, by_path):
             ld.append({"@context": "https://schema.org", "@type": "TechArticle", "headline": p["title"], "description": p["description"],
                        "url": url, "datePublished": p["published"], "dateModified": p["updated"], "inLanguage": "en",
                        "author": {"@type": "Organization", "name": NAME, "url": SITE + "/about/"},
-                       "publisher": {"@type": "Organization", "name": NAME, "url": SITE + "/"}})
+                       "publisher": {"@type": "Organization", "name": NAME, "url": SITE + "/", "logo": {"@type": "ImageObject", "url": SITE + "/assets/apple-touch-icon.png"}}})
     faq = p.get("faq") or []
     if faq:
         ld.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
@@ -96,11 +92,16 @@ def render(p, by_path):
     out.append('<meta property="og:url" content="%s">' % url)
     out.append('<meta property="og:site_name" content="%s">' % NAME)
     out.append('<meta name="theme-color" content="#0f172a">')
-    out.append('<link rel="icon" href="%s">' % ICON)
+    out.append('<link rel="icon" type="image/svg+xml" href="/assets/logo.svg">')
+    out.append('<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">')
+    out.append('<meta property="og:image" content="%s/assets/og.png">' % SITE)
+    out.append('<meta property="og:image:width" content="1200">')
+    out.append('<meta property="og:image:height" content="630">')
+    out.append('<meta name="twitter:card" content="summary_large_image">')
     out.append('<link rel="stylesheet" href="/assets/style.css">')
     out.extend(jsonld(o) for o in ld)
     out.append("</head>\n<body>\n<div class=\"wrap\">")
-    out.append('<nav class="nav" aria-label="Main"><a class="brand" href="/">%s</a><ul>%s</ul></nav>' % (NAME, nav))
+    out.append('<nav class="nav" aria-label="Main"><a class="brand" href="/" aria-label="%s home"><img src="/assets/logo.svg" width="30" height="30" alt=""><span><b>spf</b><i>dkim</i><b>dmarc</b><em>.com</em></span></a><ul>%s</ul></nav>' % (NAME, nav))
 
     if p["type"] == "home":
         out.append(body)
