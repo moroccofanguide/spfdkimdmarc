@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPF, DKIM & DMARC Checker and Record Generator</title>
+<meta name="description" content="Check your domain's SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser.">
+<link rel="canonical" href="https://spfdkimdmarc.com/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="SPF, DKIM & DMARC Checker and Record Generator">
+<meta property="og:description" content="Check your SPF, DKIM and DMARC records and get the exact DNS entries to fix them.">
+<meta property="og:url" content="https://spfdkimdmarc.com/">
+<meta name="theme-color" content="#0f172a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f766e'/%3E%3Cpath d='M8 11h16v10H8z' fill='none' stroke='white' stroke-width='2'/%3E%3Cpath d='M8 11l8 6 8-6' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SPF, DKIM & DMARC Checker and Record Generator","url":"https://spfdkimdmarc.com/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Check a domain's SPF, DKIM and DMARC DNS records and generate the correct entries for common email providers."}</script>
+<style>
+:root{
+  --bg:#f8fafc; --panel:#ffffff; --ink:#0f172a; --text:#334155; --muted:#64748b; --line:#e2e8f0;
+  --accent:#0f766e; --accent-ink:#ffffff; --code:#f1f5f9;
+  --ok:#15803d; --ok-bg:#f0fdf4; --warn:#b45309; --warn-bg:#fffbeb; --bad:#b91c1c; --bad-bg:#fef2f2;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#0b1220; --panel:#111a2e; --ink:#f1f5f9; --text:#cbd5e1; --muted:#94a3b8; --line:#23304a;
+    --accent:#2dd4bf; --accent-ink:#04201d; --code:#0b1426;
+    --ok:#4ade80; --ok-bg:#0d2a1a; --warn:#fbbf24; --warn-bg:#2a210b; --bad:#f87171; --bad-bg:#2c1212; }
+}
+*{box-sizing:border-box}
+html,body{overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header.top{padding:28px 0 8px}
+.brand{font-family:var(--mono);font-weight:700;color:var(--accent);font-size:.95rem;letter-spacing:.02em}
+h1{color:var(--ink);font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1.15;margin:.4em 0 .3em}
+.lead{color:var(--muted);margin:0 0 18px;max-width:640px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin:16px 0}
+.panel h2{color:var(--ink);font-size:1.15rem;margin:0 0 4px;display:flex;align-items:center;gap:10px}
+.step{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:.85rem;font-weight:700;flex:none}
+.hint{color:var(--muted);font-size:.92rem;margin:0 0 12px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+input[type=text],select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;min-width:0}
+input[type=text]{flex:1 1 220px}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:10px 16px;background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.ghost{background:transparent;color:var(--accent);border:1px solid var(--line);padding:6px 10px;font-size:.85rem}
+button:disabled{opacity:.6;cursor:wait}
+label.chk{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;background:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:8px 0 12px}
+.field{display:flex;flex-direction:column;gap:4px;margin:8px 0}
+.field input,.field select{flex:none;width:100%}
+.field span{font-size:.88rem;font-weight:600;color:var(--ink)}
+.status{border-radius:8px;padding:10px 12px;margin:8px 0;font-size:.95rem}
+.status b{display:block;color:inherit}
+.status.ok{background:var(--ok-bg);color:var(--ok)}
+.status.warn{background:var(--warn-bg);color:var(--warn)}
+.status.bad{background:var(--bad-bg);color:var(--bad)}
+.status .detail{color:var(--text);font-size:.88rem;margin-top:4px;overflow-wrap:anywhere}
+.rec{border:1px solid var(--line);border-radius:10px;margin:10px 0;overflow:hidden}
+.rec .head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:.88rem;flex-wrap:wrap}
+.rec .head span{color:var(--muted)} .rec .head strong{color:var(--ink)}
+.rec code{display:block;font:14px/1.5 var(--mono);background:var(--code);color:var(--ink);padding:12px;overflow-wrap:anywhere;white-space:pre-wrap}
+.note{font-size:.88rem;color:var(--muted)}
+ul.steps{margin:6px 0 0;padding-left:20px} ul.steps li{margin:4px 0}
+details{margin:6px 0} summary{cursor:pointer;font-weight:600;color:var(--ink)}
+footer{color:var(--muted);font-size:.85rem;padding:24px 0 40px}
+footer a,.panel a{color:var(--accent)}
+.faq h3{color:var(--ink);font-size:1rem;margin:16px 0 4px}
+.faq p{margin:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="top">
+  <div class="brand">spfdkimdmarc.com</div>
+  <h1>SPF, DKIM &amp; DMARC checker and record generator</h1>
+  <p class="lead">Enter your domain, pick the services that send your email, and get the exact DNS records to publish. Everything runs in your browser: nothing is stored.</p>
+</header>
+
+<section class="panel" aria-labelledby="h-check">
+  <h2 id="h-check"><span class="step">1</span>Check your domain</h2>
+  <p class="hint">We read your public DNS (MX, SPF and DMARC) using DNS-over-HTTPS.</p>
+  <form id="f-check" class="row">
+    <input id="domain" type="text" inputmode="url" autocomplete="off" spellcheck="false" placeholder="example.com" aria-label="Domain name">
+    <button id="b-check" type="submit">Check</button>
+  </form>
+  <div id="r-check" aria-live="polite"></div>
+</section>
+
+<section class="panel" aria-labelledby="h-spf">
+  <h2 id="h-spf"><span class="step">2</span>Generate your SPF record</h2>
+  <p class="hint">Tick every service that sends email with your domain in the From address. Detected providers are pre-selected after a check.</p>
+  <div class="grid" id="providers"></div>
+  <div class="field"><span>Other services (optional)</span><input id="extra-inc" type="text" spellcheck="false" placeholder="include:sendgrid.net, include:mailgun.org"></div>
+  <div class="field"><span>Your own servers' IPs (optional)</span><input id="extra-ip" type="text" spellcheck="false" placeholder="203.0.113.10, 2001:db8::1"></div>
+  <div class="field"><span>Policy for everything else</span>
+    <select id="spf-all"><option value="~all">~all (soft fail, recommended to start)</option><option value="-all">-all (hard fail, once everything is listed)</option></select>
+  </div>
+  <div id="r-spf"></div>
+</section>
+
+<section class="panel" aria-labelledby="h-dkim">
+  <h2 id="h-dkim"><span class="step">3</span>Set up and verify DKIM</h2>
+  <p class="hint">DKIM keys are created by your email provider, not by you. Follow the steps for each service, then check the record is published.</p>
+  <div id="dkim-help"></div>
+  <form id="f-dkim" class="row" style="margin-top:10px">
+    <input id="selector" type="text" spellcheck="false" placeholder="DKIM selector, e.g. google or selector1" aria-label="DKIM selector">
+    <button id="b-dkim" type="submit">Verify DKIM</button>
+  </form>
+  <div id="r-dkim" aria-live="polite"></div>
+</section>
+
+<section class="panel" aria-labelledby="h-dmarc">
+  <h2 id="h-dmarc"><span class="step">4</span>Generate your DMARC record</h2>
+  <p class="hint">Start with <code>p=none</code> to monitor, then move to <code>quarantine</code> and <code>reject</code> once SPF and DKIM pass for all your senders.</p>
+  <div class="field"><span>Policy</span>
+    <select id="dm-p"><option value="none">none (monitor only)</option><option value="quarantine">quarantine (send to spam)</option><option value="reject">reject (block)</option></select>
+  </div>
+  <div class="field"><span>Where to send aggregate reports (optional)</span><input id="dm-rua" type="text" spellcheck="false" placeholder="dmarc-reports@example.com"></div>
+  <div id="r-dmarc"></div>
+</section>
+
+<section class="panel faq" aria-labelledby="h-faq">
+  <h2 id="h-faq">Questions</h2>
+  <h3>Can I have two SPF records?</h3>
+  <p>No. A domain must publish a single TXT record starting with <code>v=spf1</code>. Two records make SPF fail. Merge every service into one record, as the generator does.</p>
+  <h3>Why is my email still going to spam?</h3>
+  <p>SPF, DKIM and DMARC prove that mail really comes from you, but content, sending reputation and blocklists also matter. Fix authentication first, then look at the rest.</p>
+  <h3>~all or -all?</h3>
+  <p>Google recommends <code>~all</code>, Microsoft recommends <code>-all</code>. Start with <code>~all</code>, and switch to <code>-all</code> once you are sure every legitimate sender is in the record.</p>
+  <h3>How long until DNS changes are visible?</h3>
+  <p>Usually minutes, sometimes a few hours depending on the record's TTL. Run the check again later if a new record does not show up yet.</p>
+</section>
+
+<footer>
+  <p>Provider values come from official documentation: <a href="https://knowledge.workspace.google.com/admin/security/set-up-spf" rel="noopener">Google Workspace</a>, <a href="https://learn.microsoft.com/en-us/defender-office-365/email-authentication-spf-configure" rel="noopener">Microsoft 365</a>, <a href="https://www.zoho.com/mail/help/adminconsole/spf-configuration.html" rel="noopener">Zoho Mail</a>, <a href="https://docs.ovhcloud.com/en/guides/web-cloud/domains/dns-zone-spf" rel="noopener">OVHcloud</a>. Always confirm in your provider's admin console.</p>
+  <p>DNS lookups are made from your browser to Cloudflare's public DNS-over-HTTPS resolver. No data is stored by this site.</p>
+</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+var PROVIDERS = [
+  { id:"google", name:"Google Workspace", include:"include:_spf.google.com", mx:/(^|\.)(google\.com|googlemail\.com)\.?$/i,
+    dkim:["Google Admin console > Apps > Google Workspace > Gmail > Authenticate email.","Generate a new record (2048-bit if your DNS host accepts it). The default selector is <code>google</code>.","Publish the TXT record shown at <code>google._domainkey</code>, then click Start authentication."], selector:"google" },
+  { id:"m365", name:"Microsoft 365", include:"include:spf.protection.outlook.com", mx:/mail\.protection\.outlook\.com\.?$/i,
+    dkim:["Microsoft Defender portal, in the email authentication settings, DKIM tab.","Publish the two CNAME records it gives you: <code>selector1._domainkey</code> and <code>selector2._domainkey</code>.","Back in the portal, enable DKIM signing for the domain."], selector:"selector1" },
+  { id:"zoho", name:"Zoho Mail", include:"include:zohomail.com", mx:/(^|\.)zoho(mail)?\.(com|eu|in|com\.au|jp|ca|sa)\.?$/i,
+    dkim:["Zoho Mail Admin Console > Domains > your domain > Email Configuration > DKIM.","Add a selector, copy the TXT value Zoho generates and publish it at <code>selector._domainkey</code>.","Click Verify in Zoho once the record is live."], selector:"" },
+  { id:"ovh", name:"OVHcloud (MX Plan, Email Pro, Exchange)", include:"include:mx.ovh.com", mx:/(^|\.)ovh\.net\.?$/i,
+    dkim:["OVHcloud Control Panel > Web Cloud > Emails (or Email Pro / Exchange) > your service.","Enable DKIM: OVHcloud shows the selector records to publish (CNAME or TXT).","If your DNS zone is hosted at OVHcloud, the records can be added automatically."], selector:"" }
+];
+var $ = function(id){ return document.getElementById(id); };
+var esc = function(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c];}); };
+
+function cleanDomain(v){
+  v = String(v||"").trim().toLowerCase();
+  v = v.replace(/^[a-z]+:\/\//,"").replace(/^www\./,"").split(/[\/?#\s]/)[0].replace(/\.$/,"");
+  if (v.indexOf("@")>=0) v = v.split("@").pop();
+  return /^([a-z0-9-]+\.)+[a-z]{2,}$/i.test(v) ? v : "";
+}
+function domainOrExample(){ return cleanDomain($("domain").value) || "example.com"; }
+
+async function doh(name, type){
+  var urls = [
+    "https://cloudflare-dns.com/dns-query?name="+encodeURIComponent(name)+"&type="+type,
+    "https://dns.google/resolve?name="+encodeURIComponent(name)+"&type="+type
+  ];
+  var lastErr;
+  for (var i=0;i<urls.length;i++){
+    try {
+      var r = await fetch(urls[i], { headers:{ "accept":"application/dns-json" } });
+      if (!r.ok) throw new Error("HTTP "+r.status);
+      var j = await r.json();
+      return j;
+    } catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("DNS lookup failed");
+}
+function txtValues(j, typeNum){
+  return (j.Answer||[]).filter(function(a){ return a.type===typeNum; }).map(function(a){
+    var d = a.data || "";
+    var parts = d.match(/"((?:[^"\\]|\\.)*)"/g);
+    return parts ? parts.map(function(p){ return p.slice(1,-1).replace(/\\"/g,'"'); }).join("") : d;
+  });
+}
+function status(cls, title, detail){
+  return '<div class="status '+cls+'"><b>'+title+'</b>'+(detail?'<div class="detail">'+detail+'</div>':'')+'</div>';
+}
+function record(type, host, value, id){
+  return '<div class="rec"><div class="head"><div><span>Type</span> <strong>'+type+'</strong> &nbsp; <span>Host / Name</span> <strong>'+esc(host)+'</strong></div>'+
+    '<button class="ghost" type="button" data-copy="'+id+'">Copy value</button></div><code id="'+id+'">'+esc(value)+'</code></div>';
+}
+document.addEventListener("click", function(e){
+  var b = e.target.closest("[data-copy]"); if(!b) return;
+  var t = $(b.getAttribute("data-copy")).textContent;
+  var done = function(){ var o=b.textContent; b.textContent="Copied"; setTimeout(function(){ b.textContent=o; },1200); };
+  if (navigator.clipboard) navigator.clipboard.writeText(t).then(done, function(){});
+});
+
+/* Providers UI */
+$("providers").innerHTML = PROVIDERS.map(function(p){
+  return '<label class="chk"><input type="checkbox" value="'+p.id+'"> <span>'+esc(p.name)+'</span></label>';
+}).join("");
+function selected(){ return Array.prototype.slice.call(document.querySelectorAll("#providers input:checked")).map(function(i){ return i.value; }); }
+
+function spfMechanisms(){
+  var mech = [];
+  selected().forEach(function(id){ var p = PROVIDERS.filter(function(x){return x.id===id;})[0]; if(p) mech.push(p.include); });
+  ($("extra-inc").value||"").split(/[\s,;]+/).forEach(function(t){
+    t = t.trim(); if(!t) return;
+    if (!/^(include:|a\b|mx\b|ip4:|ip6:|exists:)/i.test(t)) t = "include:"+t.replace(/^include:/i,"");
+    mech.push(t.toLowerCase());
+  });
+  ($("extra-ip").value||"").split(/[\s,;]+/).forEach(function(t){
+    t = t.trim(); if(!t) return;
+    if (/^\d{1,3}(\.\d{1,3}){3}(\/\d{1,2})?$/.test(t)) mech.push("ip4:"+t);
+    else if (/^[0-9a-f:]+(\/\d{1,3})?$/i.test(t) && t.indexOf(":")>=0) mech.push("ip6:"+t);
+  });
+  return mech.filter(function(m,i){ return mech.indexOf(m)===i; });
+}
+function renderSpf(){
+  var mech = spfMechanisms();
+  var out = "";
+  if (!mech.length){ $("r-spf").innerHTML = '<p class="note">Select at least one service to generate your record.</p>'; renderDkimHelp(); return; }
+  var value = "v=spf1 " + mech.join(" ") + " " + $("spf-all").value;
+  var lookups = mech.filter(function(m){ return /^(include:|a\b|mx\b|exists:)/.test(m); }).length;
+  out += record("TXT", "@", value, "c-spf");
+  out += '<p class="note">Replace any existing <code>v=spf1</code> record with this one: a domain must have only one.</p>';
+  if (lookups > 10) out += status("bad","Too many DNS lookups","This record needs more than 10 lookups and will fail SPF. Remove services you no longer use.");
+  else if (lookups > 6) out += status("warn","Close to the 10-lookup limit","Each include can trigger extra lookups of its own. Check the final count with a full SPF validator.");
+  $("r-spf").innerHTML = out;
+  renderDkimHelp();
+}
+["extra-inc","extra-ip","spf-all"].forEach(function(id){ $(id).addEventListener("input", renderSpf); });
+$("providers").addEventListener("change", renderSpf);
+
+function renderDkimHelp(){
+  var ids = selected();
+  if (!ids.length){ $("dkim-help").innerHTML = '<p class="note">Select your services in step 2 to see where to create their DKIM keys.</p>'; return; }
+  $("dkim-help").innerHTML = ids.map(function(id){
+    var p = PROVIDERS.filter(function(x){return x.id===id;})[0];
+    return '<details open><summary>'+esc(p.name)+'</summary><ul class="steps">'+p.dkim.map(function(s){return "<li>"+s+"</li>";}).join("")+'</ul></details>';
+  }).join("");
+  if (!$("selector").value){ var p0 = PROVIDERS.filter(function(x){return x.id===ids[0];})[0]; if (p0 && p0.selector) $("selector").placeholder = "DKIM selector, e.g. "+p0.selector; }
+}
+
+function renderDmarc(){
+  var d = domainOrExample();
+  var v = "v=DMARC1; p=" + $("dm-p").value;
+  var rua = ($("dm-rua").value||"").trim();
+  if (rua) v += "; rua=mailto:" + rua.replace(/^mailto:/i,"");
+  var out = record("TXT", "_dmarc", v, "c-dmarc");
+  out += '<p class="note">Host is <code>_dmarc</code> (some DNS panels want the full name <code>_dmarc.'+esc(d)+'</code>).</p>';
+  if (rua && rua.split("@").pop().toLowerCase() !== d && cleanDomain($("domain").value))
+    out += status("warn","Reports go to another domain","That domain must publish an authorization record, otherwise reports will not be delivered.");
+  $("r-dmarc").innerHTML = out;
+}
+["dm-p","dm-rua"].forEach(function(id){ $(id).addEventListener("input", renderDmarc); });
+
+/* Step 1: check */
+$("f-check").addEventListener("submit", async function(e){
+  e.preventDefault();
+  var d = cleanDomain($("domain").value);
+  if (!d){ $("r-check").innerHTML = status("bad","Enter a valid domain","For example: example.com"); return; }
+  $("domain").value = d;
+  var b = $("b-check"); b.disabled = true; b.textContent = "Checking…";
+  try {
+    var res = await Promise.all([doh(d,"MX"), doh(d,"TXT"), doh("_dmarc."+d,"TXT")]);
+    var mx = (res[0].Answer||[]).filter(function(a){return a.type===15;}).map(function(a){ return a.data.split(" ").pop(); });
+    var spfs = txtValues(res[1],16).filter(function(t){ return /^v=spf1(\s|$)/i.test(t); });
+    var dmarcs = txtValues(res[2],16).filter(function(t){ return /^v=DMARC1/i.test(t); });
+    var out = "";
+    if (res[0].Status === 3) out += status("bad","Domain not found","This domain does not exist in DNS.");
+    else if (!mx.length) out += status("warn","No MX record","This domain cannot receive email. That is fine for a send-only domain.");
+    else out += status("ok","MX found", mx.map(esc).join("<br>"));
+    if (!spfs.length) out += status("bad","No SPF record","Generate one in step 2 and publish it as a TXT record on @.");
+    else if (spfs.length > 1) out += status("bad","Several SPF records","Only one is allowed, so SPF fails. Merge them into the record from step 2.<br>"+spfs.map(esc).join("<br>"));
+    else {
+      var s = spfs[0];
+      var cls = /\+all\b/.test(s) ? "bad" : (/[~-]all\b/.test(s) ? "ok" : "warn");
+      var msg = /\+all\b/.test(s) ? "+all lets anyone send as you. Replace it." : (/[~-]all\b/.test(s) ? "" : "No ~all or -all at the end: unlisted senders are not flagged.");
+      out += status(cls, cls==="ok" ? "SPF found" : "SPF needs attention", esc(s)+(msg?"<br>"+msg:""));
+    }
+    if (!dmarcs.length) out += status("bad","No DMARC record","Generate one in step 4 and publish it on _dmarc.");
+    else {
+      var dm = dmarcs[0], p = (dm.match(/;\s*p=(\w+)/i)||[])[1];
+      out += status(p==="none" ? "warn" : "ok", p==="none" ? "DMARC found (monitoring only)" : "DMARC found", esc(dm)+(p==="none"?"<br>p=none does not protect your domain yet: move to quarantine once reports look clean.":""));
+    }
+    $("r-check").innerHTML = out;
+    var detected = [];
+    PROVIDERS.forEach(function(p){
+      var hit = mx.some(function(h){ return p.mx.test(h); }) || spfs.some(function(s){ return s.toLowerCase().indexOf(p.include)>=0; });
+      if (hit) detected.push(p.id);
+    });
+    document.querySelectorAll("#providers input").forEach(function(i){ i.checked = detected.indexOf(i.value)>=0; });
+    $("extra-inc").value = ""; $("extra-ip").value = ""; $("spf-all").value = "~all";
+    if (spfs.length===1){
+      var known = PROVIDERS.map(function(p){return p.include;});
+      var extras = spfs[0].split(/\s+/).slice(1).filter(function(t){ return !/^[~+?-]?all$/i.test(t) && known.indexOf(t.toLowerCase())<0 && !/^(ip4|ip6):/i.test(t); });
+      var ips = spfs[0].split(/\s+/).filter(function(t){ return /^(ip4|ip6):/i.test(t); }).map(function(t){ return t.slice(4); });
+      if (extras.length) $("extra-inc").value = extras.join(" ");
+      if (ips.length) $("extra-ip").value = ips.join(", ");
+      if (/\s-all\b/.test(spfs[0])) $("spf-all").value = "-all";
+    }
+    renderSpf(); renderDmarc();
+  } catch(err){
+    $("r-check").innerHTML = status("bad","DNS lookup failed","Check your connection and try again. ("+esc(err.message)+")");
+  } finally { b.disabled = false; b.textContent = "Check"; }
+});
+
+/* Step 3: verify DKIM */
+$("f-dkim").addEventListener("submit", async function(e){
+  e.preventDefault();
+  var d = cleanDomain($("domain").value);
+  var sel = ($("selector").value||"").trim().toLowerCase().replace(/\._domainkey.*$/,"");
+  if (!d){ $("r-dkim").innerHTML = status("bad","Enter your domain in step 1 first",""); return; }
+  if (!/^[a-z0-9._-]+$/.test(sel)){ $("r-dkim").innerHTML = status("bad","Enter a DKIM selector","Your provider shows it in its DKIM settings, for example google or selector1."); return; }
+  var b = $("b-dkim"); b.disabled = true; b.textContent = "Checking…";
+  var name = sel+"._domainkey."+d;
+  try {
+    var j = await doh(name,"TXT");
+    var cname = (j.Answer||[]).filter(function(a){return a.type===5;}).map(function(a){return a.data;});
+    var keys = txtValues(j,16).filter(function(t){ return /(^|;)\s*(v=DKIM1|k=|p=)/i.test(t); });
+    if (keys.length){
+      var empty = keys.some(function(k){ return /(^|;)\s*p=\s*(;|$)/i.test(k); });
+      $("r-dkim").innerHTML = empty ? status("bad","DKIM key revoked","The record exists but its p= value is empty: "+esc(name))
+        : status("ok","DKIM record found", esc(name)+(cname.length?"<br>via CNAME "+esc(cname.join(" → ")):"")+"<br>"+esc(keys[0].slice(0,120))+(keys[0].length>120?"…":""));
+    } else if (cname.length){
+      $("r-dkim").innerHTML = status("warn","CNAME found, key not reachable yet", esc(name)+" → "+esc(cname.join(" → "))+"<br>If you just enabled DKIM, your provider may still be publishing the key.");
+    } else {
+      $("r-dkim").innerHTML = status("bad","No DKIM record at "+esc(name),"Check the selector name in your provider's DKIM settings, then publish the record it gives you.");
+    }
+  } catch(err){
+    $("r-dkim").innerHTML = status("bad","DNS lookup failed","Try again in a moment. ("+esc(err.message)+")");
+  } finally { b.disabled = false; b.textContent = "Verify DKIM"; }
+});
+
+renderSpf(); renderDmarc();
+})();
+</script>
+</body>
+</html>
