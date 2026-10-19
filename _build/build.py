@@ -31,6 +31,17 @@ with open(os.path.join(ROOT, "assets", "style.css"), "rb") as _f:
     CSS_VER = hashlib.sha1(_f.read()).hexdigest()[:8]
 
 
+def asset_ver(name):
+    with open(os.path.join(ROOT, "assets", name), "rb") as f:
+        return hashlib.sha1(f.read()).hexdigest()[:8]
+
+
+def bust(page):
+    for name in ("logo.svg", "apple-touch-icon.png", "og.png"):
+        page = page.replace("/assets/%s\"" % name, "/assets/%s?v=%s\"" % (name, asset_ver(name)))
+    return page
+
+
 def esc(s):
     return html.escape(s, quote=True)
 
@@ -185,7 +196,7 @@ def main():
             os.makedirs(d, exist_ok=True)
             dest = os.path.join(d, "index.html")
         with open(dest, "w", encoding="utf-8") as f:
-            f.write(render(p, by_path))
+            f.write(bust(render(p, by_path)))
     urls = sorted((p for p in pages if not p.get("noindex")), key=lambda p: (p["path"] != "/", p["path"]))
     with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
