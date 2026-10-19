@@ -116,3 +116,21 @@ td code{white-space:nowrap}
 .faq h3{color:var(--ink);font-size:1rem;margin:16px 0 4px}
 .hint.after{margin:10px 0 0}
 #check h2{margin-bottom:12px}
+/* Service page */
+.lead{color:var(--muted);font-size:1.05rem;max-width:70ch}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:20px 0 8px}
+.plan{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column}
+.plan.main{border:2px solid var(--accent)}
+.plan h2{margin:0 0 4px;font-size:1.25rem}
+.plan .tag{position:absolute;top:-12px;left:18px;margin:0;background:var(--accent);color:var(--accent-ink);font-size:.75rem;font-weight:700;padding:3px 10px;border-radius:99px}
+.plan .price{font-size:2rem;font-weight:800;color:var(--ink);margin:4px 0}
+.plan .price span{font-size:.9rem;font-weight:500;color:var(--muted)}
+.plan .for{color:var(--muted);margin:0 0 8px}
+.plan ul{padding-left:20px;margin:0 0 16px;flex:1}
+.btn{display:inline-block;text-align:center;font-weight:600;border-radius:8px;padding:11px 16px;background:var(--accent);color:var(--accent-ink)!important;text-decoration:none}
+.plan .btn{display:block}
+ol.how li{margin:8px 0}
+.hire{margin:10px 0 0;padding:12px 14px;border-radius:10px;border:1px dashed var(--accent);font-size:.95rem}
+.hire a{font-weight:600}
+.desk a.nav-cta{background:var(--accent);color:var(--accent-ink);margin-left:6px}
+.desk a.nav-cta:hover{background:var(--accent);color:var(--accent-ink);opacity:.9}

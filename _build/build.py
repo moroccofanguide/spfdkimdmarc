@@ -18,7 +18,7 @@ NAME = "spfdkimdmarc.com"
 NAV = [("/", "Checker"), ("/spf/", "SPF"), ("/dkim/", "DKIM"), ("/dmarc/", "DMARC"), ("/guides/", "Guides")]
 
 CTA = """<div class="cta">
-  <p><strong>Check your domain now.</strong> See your current SPF, DKIM and DMARC records and get the exact entries to fix them.</p>
+  <p><strong>Check your domain now.</strong> See your current SPF, DKIM and DMARC records and get the exact entries to fix them. Rather not touch DNS? <a href="/setup-service/">We can do it for you</a>.</p>
   <form class="row" action="/" method="get">
     <input type="text" name="d" inputmode="url" autocomplete="off" spellcheck="false" placeholder="example.com" aria-label="Domain name">
     <button type="submit">Check</button>
@@ -72,6 +72,7 @@ MENU = [
     ("Learn", [("/spf/", "SPF explained"), ("/dkim/", "DKIM explained"), ("/dmarc/", "DMARC explained")]),
     ("Provider guides", [("/guides/google-workspace/", "Google Workspace"), ("/guides/microsoft-365/", "Microsoft 365"),
                          ("/guides/zoho-mail/", "Zoho Mail"), ("/guides/ovhcloud/", "OVHcloud"), ("/guides/", "All guides")]),
+    ("Need help?", [("/setup-service/", "Done-for-you setup, from 49 €")]),
 ]
 
 BURGER = ('<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path class="l1" d="M3 6h18"/><path class="l2" d="M3 12h18"/>'
@@ -85,7 +86,7 @@ def header(path, nav):
     return ('<header class="site"><div class="wrap bar">'
             '<a class="brand" href="/" aria-label="%s home"><img src="/assets/logo.svg" width="32" height="32" alt="">'
             '<span class="wm"><span class="wm-a">spf</span><span class="wm-b">dkim</span><span class="wm-a">dmarc</span><span class="wm-c">.com</span></span></a>'
-            '<nav class="desk" aria-label="Main"><ul>%s</ul></nav>'
+            '<nav class="desk" aria-label="Main"><ul>%s<li><a class="nav-cta" href="/setup-service/">Get it done</a></li></ul></nav>'
             '<details class="mnav"><summary aria-label="Menu">%s</summary><nav class="mpanel" aria-label="Mobile">%s</nav></details>'
             '</div></header>') % (NAME, nav, BURGER, groups)
 
@@ -109,6 +110,12 @@ def render(p, by_path):
                        "url": url, "datePublished": p["published"], "dateModified": p["updated"], "inLanguage": "en",
                        "author": {"@type": "Organization", "name": NAME, "url": SITE + "/about/"},
                        "publisher": {"@type": "Organization", "name": NAME, "url": SITE + "/", "logo": {"@type": "ImageObject", "url": SITE + "/assets/apple-touch-icon.png"}}})
+    if p.get("service"):
+        ld.append({"@context": "https://schema.org", "@type": "Service", "name": p["title"], "serviceType": "Email authentication setup",
+                   "description": p["description"], "url": url, "areaServed": "Worldwide",
+                   "provider": {"@type": "Organization", "name": NAME, "url": SITE + "/", "email": "help@spfdkimdmarc.com"},
+                   "offers": [{"@type": "Offer", "name": "Fix", "price": "49", "priceCurrency": "EUR"},
+                              {"@type": "Offer", "name": "Complete", "price": "99", "priceCurrency": "EUR"}]})
     faq = p.get("faq") or []
     if faq:
         ld.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [
@@ -174,7 +181,7 @@ def render(p, by_path):
             out.append("</div></section>")
         out.append("</article>")
 
-    out.append('<footer><div class="links"><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/guides/">Setup guides</a></div>'
+    out.append('<footer><div class="links"><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/guides/">Setup guides</a><a href="/setup-service/">Setup service</a><a href="mailto:help@spfdkimdmarc.com">Contact</a></div>'
                '<p>Free SPF, DKIM and DMARC checker and record generator. Lookups run in your browser through public DNS-over-HTTPS resolvers; nothing is stored.</p></footer>')
     out.append("</div>")
     out.append("<script>document.querySelectorAll('.mnav').forEach(function(d){d.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){d.open=false;});});document.addEventListener('click',function(e){if(d.open&&!d.contains(e.target))d.open=false;});});</script>")

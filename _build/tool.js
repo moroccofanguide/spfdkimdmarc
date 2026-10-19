@@ -147,6 +147,7 @@ $("f-check").addEventListener("submit", async function(e){
       var dm = dmarcs[0], p = (dm.match(/;\s*p=(\w+)/i)||[])[1];
       out += status(p==="none" ? "warn" : "ok", p==="none" ? "DMARC found (monitoring only)" : "DMARC found", esc(dm)+(p==="none"?"<br>p=none does not protect your domain yet: move to quarantine once reports look clean.":""));
     }
+    if (/status (bad|warn)/.test(out)) out += '<p class="hire">Prefer not to edit DNS yourself? <a href="/setup-service/">We fix SPF, DKIM and DMARC for you, from 49 €</a>.</p>';
     $("r-check").innerHTML = out;
     var detected = [];
     PROVIDERS.forEach(function(p){

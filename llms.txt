@@ -24,6 +24,10 @@ Notes for language models:
 - [Zoho Mail](https://spfdkimdmarc.com/guides/zoho-mail/)
 - [OVHcloud](https://spfdkimdmarc.com/guides/ovhcloud/)
 
+## Service
+
+- [Done-for-you SPF, DKIM & DMARC setup](https://spfdkimdmarc.com/setup-service/): audit and setup by a Linux systems engineer. Fix plan 49 EUR per domain, Complete plan 99 EUR per domain. Contact: help@spfdkimdmarc.com
+
 ## Optional
 
 - [About](https://spfdkimdmarc.com/about/)
