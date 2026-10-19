@@ -56,6 +56,29 @@ def strip_tags(s):
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", "", s)).strip()
 
 
+MENU = [
+    ("Tools", [("/#check", "Check a domain"), ("/#h-spf", "SPF record generator"), ("/#h-dkim", "DKIM checker"), ("/#h-dmarc", "DMARC record generator")]),
+    ("Learn", [("/spf/", "SPF explained"), ("/dkim/", "DKIM explained"), ("/dmarc/", "DMARC explained")]),
+    ("Provider guides", [("/guides/google-workspace/", "Google Workspace"), ("/guides/microsoft-365/", "Microsoft 365"),
+                         ("/guides/zoho-mail/", "Zoho Mail"), ("/guides/ovhcloud/", "OVHcloud"), ("/guides/", "All guides")]),
+]
+
+BURGER = ('<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path class="l1" d="M3 6h18"/><path class="l2" d="M3 12h18"/>'
+          '<path class="l3" d="M3 18h18"/></svg>')
+
+
+def header(path, nav):
+    groups = "".join(
+        '<div class="grp"><p>%s</p>%s</div>' % (g, "".join('<a href="%s"%s>%s</a>' % (h, ' aria-current="page"' if h == path else "", t) for h, t in items))
+        for g, items in MENU)
+    return ('<header class="site"><div class="wrap bar">'
+            '<a class="brand" href="/" aria-label="%s home"><img src="/assets/logo.svg" width="32" height="32" alt="">'
+            '<span class="wm"><span class="wm-a">spf</span><span class="wm-b">dkim</span><span class="wm-a">dmarc</span><span class="wm-c">.com</span></span></a>'
+            '<nav class="desk" aria-label="Main"><ul>%s</ul></nav>'
+            '<details class="mnav"><summary aria-label="Menu">%s</summary><nav class="mpanel" aria-label="Mobile">%s</nav></details>'
+            '</div></header>') % (NAME, nav, BURGER, groups)
+
+
 def render(p, by_path):
     url = SITE + p["path"]
     seo_title = p.get("seo_title") or p["title"]
@@ -105,8 +128,9 @@ def render(p, by_path):
     out.append('<meta name="twitter:card" content="summary_large_image">')
     out.append('<link rel="stylesheet" href="/assets/style.css?v=%s">' % CSS_VER)
     out.extend(jsonld(o) for o in ld)
-    out.append("</head>\n<body>\n<div class=\"wrap\">")
-    out.append('<nav class="nav" aria-label="Main"><a class="brand" href="/" aria-label="%s home"><img src="/assets/logo.svg" width="30" height="30" alt=""><span class="wm"><span class="wm-a">spf</span><span class="wm-b">dkim</span><span class="wm-a">dmarc</span><span class="wm-c">.com</span></span></a><ul>%s</ul></nav>' % (NAME, nav))
+    out.append("</head>\n<body>")
+    out.append(header(p["path"], nav))
+    out.append('<div class="wrap">')
 
     if p["type"] == "home":
         out.append(body)
@@ -142,6 +166,7 @@ def render(p, by_path):
     out.append('<footer><div class="links"><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/guides/">Setup guides</a></div>'
                '<p>Free SPF, DKIM and DMARC checker and record generator. Lookups run in your browser through public DNS-over-HTTPS resolvers; nothing is stored.</p></footer>')
     out.append("</div>")
+    out.append("<script>document.querySelectorAll('.mnav').forEach(function(d){d.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){d.open=false;});});document.addEventListener('click',function(e){if(d.open&&!d.contains(e.target))d.open=false;});});</script>")
     if p["type"] == "home":
         with open(os.path.join(HERE, "tool.js"), encoding="utf-8") as f:
             out.append("<script>\n" + f.read() + "</script>")
