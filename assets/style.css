@@ -14,7 +14,7 @@
 html,body{overflow-x:clip}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 var(--sans)}
 .wrap{max-width:860px;margin:0 auto;padding:0 16px}
-header.top{padding:28px 0 8px}
+header.top{padding:18px 0 0}
 h1{color:var(--ink);font-size:clamp(1.6rem,4.5vw,2.3rem);line-height:1.15;margin:.4em 0 .3em}
 .lead{color:var(--muted);margin:0 0 18px;max-width:640px}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin:16px 0}
@@ -114,3 +114,5 @@ td code{white-space:nowrap}
 .card span{font-size:.92rem}
 .related{margin:28px 0 0}
 .faq h3{color:var(--ink);font-size:1rem;margin:16px 0 4px}
+.hint.after{margin:10px 0 0}
+#check h2{margin-bottom:12px}
