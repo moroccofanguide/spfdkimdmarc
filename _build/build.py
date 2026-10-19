@@ -72,7 +72,7 @@ MENU = [
     ("Learn", [("/spf/", "SPF explained"), ("/dkim/", "DKIM explained"), ("/dmarc/", "DMARC explained")]),
     ("Provider guides", [("/guides/google-workspace/", "Google Workspace"), ("/guides/microsoft-365/", "Microsoft 365"),
                          ("/guides/zoho-mail/", "Zoho Mail"), ("/guides/ovhcloud/", "OVHcloud"), ("/guides/", "All guides")]),
-    ("Need help?", [("/setup-service/", "Done-for-you setup, from 49 €")]),
+    ("Need help?", [("/setup-service/", "Done-for-you setup, from 49 € / $49")]),
 ]
 
 BURGER = ('<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path class="l1" d="M3 6h18"/><path class="l2" d="M3 12h18"/>'
@@ -115,7 +115,9 @@ def render(p, by_path):
                    "description": p["description"], "url": url, "areaServed": "Worldwide",
                    "provider": {"@type": "Organization", "name": NAME, "url": SITE + "/", "email": "help@spfdkimdmarc.com"},
                    "offers": [{"@type": "Offer", "name": "Fix", "price": "49", "priceCurrency": "EUR"},
-                              {"@type": "Offer", "name": "Complete", "price": "99", "priceCurrency": "EUR"}]})
+                              {"@type": "Offer", "name": "Fix", "price": "49", "priceCurrency": "USD"},
+                              {"@type": "Offer", "name": "Complete", "price": "99", "priceCurrency": "EUR"},
+                              {"@type": "Offer", "name": "Complete", "price": "99", "priceCurrency": "USD"}]})
     faq = p.get("faq") or []
     if faq:
         ld.append({"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [

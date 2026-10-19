@@ -26,7 +26,7 @@ Notes for language models:
 
 ## Service
 
-- [Done-for-you SPF, DKIM & DMARC setup](https://spfdkimdmarc.com/setup-service/): audit and setup by a Linux systems engineer. Fix plan 49 EUR per domain, Complete plan 99 EUR per domain. Contact: help@spfdkimdmarc.com
+- [Done-for-you SPF, DKIM & DMARC setup](https://spfdkimdmarc.com/setup-service/): audit and setup by a Linux systems engineer. Fix plan 49 EUR or 49 USD per domain, Complete plan 99 EUR or 99 USD per domain. Contact: help@spfdkimdmarc.com
 
 ## Optional
 
