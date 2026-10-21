@@ -48,7 +48,7 @@
 <p>The <a href="/#check">generator</a> builds the right combination for you from the services you tick.</p>
 
 <h2 id="one">Only one SPF record per domain</h2>
-<p>This is the most common mistake we see. A domain must publish exactly one TXT record starting with <code>v=spf1</code>. When a second provider is added, many people create a second record instead of editing the first one. With two records, receivers return a <strong>PermError</strong> and SPF fails for every message, including the ones that were fine before.</p>
+<p>This is one of the most common SPF mistakes. A domain must publish exactly one TXT record starting with <code>v=spf1</code>. When a second provider is added, many people create a second record instead of editing the first one. With two records, receivers return a <strong>PermError</strong> and SPF fails for every message, including the ones that were fine before.</p>
 <div class="callout">Wrong: two records<br><code>v=spf1 include:_spf.google.com ~all</code><br><code>v=spf1 include:mx.ovh.com ~all</code></div>
 <div class="callout ok">Right: one merged record<br><code>v=spf1 include:_spf.google.com include:mx.ovh.com ~all</code></div>
 <p>Other TXT records on the same name (Google site verification, Facebook domain verification and so on) are not a problem. Only records starting with <code>v=spf1</code> count.</p>
