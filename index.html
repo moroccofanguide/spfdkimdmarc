@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SPF, DKIM &amp; DMARC Checker and Record Generator</title>
-<meta name="description" content="Check your domain&#x27;s SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser.">
+<meta name="description" content="Check your domain&#x27;s SPF, DKIM and DMARC records and get the exact DNS entries for Google Workspace, Microsoft 365, Zoho Mail or OVHcloud. Free.">
 <link rel="canonical" href="https://spfdkimdmarc.com/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="SPF, DKIM &amp; DMARC Checker and Record Generator">
-<meta property="og:description" content="Check your domain&#x27;s SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser.">
+<meta property="og:description" content="Check your domain&#x27;s SPF, DKIM and DMARC records and get the exact DNS entries for Google Workspace, Microsoft 365, Zoho Mail or OVHcloud. Free.">
 <meta property="og:url" content="https://spfdkimdmarc.com/">
 <meta property="og:site_name" content="spfdkimdmarc.com">
 <meta name="theme-color" content="#0f172a">
@@ -19,7 +19,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/assets/style.css?v=86af2691">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SPF, DKIM & DMARC Checker and Record Generator","url":"https://spfdkimdmarc.com/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Check your domain's SPF, DKIM and DMARC records and get the exact DNS entries to fix them, for Google Workspace, Microsoft 365, Zoho Mail and OVHcloud. Free, runs in your browser."}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"SPF, DKIM & DMARC Checker and Record Generator","url":"https://spfdkimdmarc.com/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Check your domain's SPF, DKIM and DMARC records and get the exact DNS entries for Google Workspace, Microsoft 365, Zoho Mail or OVHcloud. Free."}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I have two SPF records?","acceptedAnswer":{"@type":"Answer","text":"No. A domain must publish a single TXT record starting with v=spf1. Two records make SPF fail with a permanent error. Merge every service into one record, as the generator does. More on SPF."}},{"@type":"Question","name":"Why is my email still going to spam?","acceptedAnswer":{"@type":"Answer","text":"SPF, DKIM and DMARC prove that mail really comes from you, but content, sending reputation, complaint rates and blocklists also matter. Fix authentication first, then look at the rest."}},{"@type":"Question","name":"~all or -all?","acceptedAnswer":{"@type":"Answer","text":"Google recommends ~all, Microsoft recommends -all. Start with ~all, and switch to -all once you are sure every legitimate sender is in the record."}},{"@type":"Question","name":"Do I need all three?","acceptedAnswer":{"@type":"Answer","text":"Yes, if you send any volume. Gmail and Yahoo require SPF and DKIM plus a DMARC record from senders of more than 5,000 messages a day, and even small senders get better delivery with all three in place."}},{"@type":"Question","name":"Where do I find my DKIM selector?","acceptedAnswer":{"@type":"Answer","text":"Open a message you sent, view its original headers, and look for the s= value in the DKIM-Signature header. Google Workspace uses google by default and Microsoft 365 uses selector1 and selector2."}},{"@type":"Question","name":"How long until DNS changes are visible?","acceptedAnswer":{"@type":"Answer","text":"Usually minutes, sometimes a few hours depending on the record's TTL. Run the check again later if a new record does not show up yet."}}]}</script>
 </head>
 <body>

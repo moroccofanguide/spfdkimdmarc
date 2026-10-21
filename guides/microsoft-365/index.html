@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Microsoft 365 SPF, DKIM and DMARC Setup (Step by Step)</title>
-<meta name="description" content="Set up SPF, DKIM and DMARC for Microsoft 365 and Exchange Online: the SPF include, the two DKIM CNAME records in the old and new formats, where to enable signing in Defender, and DMARC.">
+<meta name="description" content="Microsoft 365 SPF, DKIM and DMARC: the SPF include, the two DKIM CNAME records, where to enable signing in Defender, and DMARC.">
 <link rel="canonical" href="https://spfdkimdmarc.com/guides/microsoft-365/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Microsoft 365 SPF, DKIM and DMARC Setup (Step by Step)">
-<meta property="og:description" content="Set up SPF, DKIM and DMARC for Microsoft 365 and Exchange Online: the SPF include, the two DKIM CNAME records in the old and new formats, where to enable signing in Defender, and DMARC.">
+<meta property="og:description" content="Microsoft 365 SPF, DKIM and DMARC: the SPF include, the two DKIM CNAME records, where to enable signing in Defender, and DMARC.">
 <meta property="og:url" content="https://spfdkimdmarc.com/guides/microsoft-365/">
 <meta property="og:site_name" content="spfdkimdmarc.com">
 <meta name="theme-color" content="#0f172a">
@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/assets/style.css?v=86af2691">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://spfdkimdmarc.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://spfdkimdmarc.com/guides/"},{"@type":"ListItem","position":3,"name":"Microsoft 365","item":"https://spfdkimdmarc.com/guides/microsoft-365/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"SPF, DKIM and DMARC for Microsoft 365","description":"Set up SPF, DKIM and DMARC for Microsoft 365 and Exchange Online: the SPF include, the two DKIM CNAME records in the old and new formats, where to enable signing in Defender, and DMARC.","url":"https://spfdkimdmarc.com/guides/microsoft-365/","datePublished":"2026-10-18","dateModified":"2026-10-18","inLanguage":"en","author":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/about/"},"publisher":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/","logo":{"@type":"ImageObject","url":"https://spfdkimdmarc.com/assets/apple-touch-icon.png?v=3f03f617"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"SPF, DKIM and DMARC for Microsoft 365","description":"Microsoft 365 SPF, DKIM and DMARC: the SPF include, the two DKIM CNAME records, where to enable signing in Defender, and DMARC.","url":"https://spfdkimdmarc.com/guides/microsoft-365/","datePublished":"2026-10-18","dateModified":"2026-10-21","inLanguage":"en","author":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/about/"},"publisher":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/","logo":{"@type":"ImageObject","url":"https://spfdkimdmarc.com/assets/apple-touch-icon.png?v=3f03f617"}}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need to do anything for my onmicrosoft.com domain?","acceptedAnswer":{"@type":"Answer","text":"No. Microsoft manages SPF and DKIM for the initial onmicrosoft.com domain. These steps are for each custom domain you add."}},{"@type":"Question","name":"Why does Microsoft recommend -all?","acceptedAnswer":{"@type":"Answer","text":"Microsoft explains that DMARC can effectively ignore an SPF ~all failure when a message has no DKIM signature, so it recommends -all for domains that also use DKIM and DMARC."}},{"@type":"Question","name":"Can I build the CNAME values myself?","acceptedAnswer":{"@type":"Answer","text":"Microsoft advises against it. Copy the exact values from the Defender portal or from Get-DkimSigningConfig, because the new format contains a partition letter assigned by Microsoft."}}]}</script>
 </head>
 <body>
@@ -29,7 +29,7 @@
 <p class="crumbs"><a href="/">Home</a> / <a href="/guides/">Guides</a> / Microsoft 365</p>
 <article>
 <h1>SPF, DKIM and DMARC for Microsoft 365</h1>
-<p class="meta">Updated 2026-10-18</p>
+<p class="meta">Updated 2026-10-21</p>
 <p>Microsoft 365 handles DKIM differently from most providers: instead of a TXT key, you publish two CNAME records that point to keys Microsoft manages. The steps below follow Microsoft's documentation for Exchange Online and Defender for Office 365.</p>
 
 <div class="toc"><strong>On this page</strong><ol>

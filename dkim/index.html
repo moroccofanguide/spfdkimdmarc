@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DKIM Record Explained: Selectors, Key Length and Common Errors</title>
-<meta name="description" content="How DKIM signing works, what a selector is and how to find yours, TXT vs CNAME records, 1024 vs 2048-bit keys, and how to fix the most common DKIM failures.">
+<meta name="description" content="How DKIM signing works, how to find your selector, TXT vs CNAME records, 1024 vs 2048-bit keys, and fixes for common DKIM failures.">
 <link rel="canonical" href="https://spfdkimdmarc.com/dkim/">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DKIM Record Explained: Selectors, Key Length and Common Errors">
-<meta property="og:description" content="How DKIM signing works, what a selector is and how to find yours, TXT vs CNAME records, 1024 vs 2048-bit keys, and how to fix the most common DKIM failures.">
+<meta property="og:description" content="How DKIM signing works, how to find your selector, TXT vs CNAME records, 1024 vs 2048-bit keys, and fixes for common DKIM failures.">
 <meta property="og:url" content="https://spfdkimdmarc.com/dkim/">
 <meta property="og:site_name" content="spfdkimdmarc.com">
 <meta name="theme-color" content="#0f172a">
@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/assets/style.css?v=86af2691">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://spfdkimdmarc.com/"},{"@type":"ListItem","position":2,"name":"DKIM","item":"https://spfdkimdmarc.com/dkim/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"DKIM explained: selectors, keys and how to check them","description":"How DKIM signing works, what a selector is and how to find yours, TXT vs CNAME records, 1024 vs 2048-bit keys, and how to fix the most common DKIM failures.","url":"https://spfdkimdmarc.com/dkim/","datePublished":"2026-10-18","dateModified":"2026-10-18","inLanguage":"en","author":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/about/"},"publisher":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/","logo":{"@type":"ImageObject","url":"https://spfdkimdmarc.com/assets/apple-touch-icon.png?v=3f03f617"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"DKIM explained: selectors, keys and how to check them","description":"How DKIM signing works, how to find your selector, TXT vs CNAME records, 1024 vs 2048-bit keys, and fixes for common DKIM failures.","url":"https://spfdkimdmarc.com/dkim/","datePublished":"2026-10-18","dateModified":"2026-10-21","inLanguage":"en","author":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/about/"},"publisher":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/","logo":{"@type":"ImageObject","url":"https://spfdkimdmarc.com/assets/apple-touch-icon.png?v=3f03f617"}}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Can I create a DKIM key myself?","acceptedAnswer":{"@type":"Answer","text":"Only if you run the mail server yourself. With a hosted provider (Google Workspace, Microsoft 365, Zoho, OVHcloud), the provider holds the private key and gives you the public record to publish. A key you generate elsewhere is useless to them."}},{"@type":"Question","name":"Can a domain have several DKIM records?","acceptedAnswer":{"@type":"Answer","text":"Yes, one per selector. Each sending service uses its own selector, so Google, a newsletter tool and a helpdesk can all sign for the same domain without conflict."}},{"@type":"Question","name":"Does DKIM encrypt my email?","acceptedAnswer":{"@type":"Answer","text":"No. DKIM signs the message so receivers can verify where it comes from and that it was not altered. The content is not hidden."}},{"@type":"Question","name":"How often should I rotate DKIM keys?","acceptedAnswer":{"@type":"Answer","text":"There is no fixed rule. Microsoft 365 provides two selectors so you can rotate without downtime. Rotating at least once a year, and immediately if you suspect a key was exposed, is a reasonable practice."}}]}</script>
 </head>
 <body>
@@ -29,7 +29,7 @@
 <p class="crumbs"><a href="/">Home</a> / DKIM</p>
 <article>
 <h1>DKIM explained: selectors, keys and how to check them</h1>
-<p class="meta">Updated 2026-10-18</p>
+<p class="meta">Updated 2026-10-21</p>
 <p>DKIM (DomainKeys Identified Mail) adds a digital signature to every message you send. Your provider signs with a private key it keeps secret, and publishes the matching public key in your DNS. The receiving server fetches that key, verifies the signature, and knows two things: the message really was authorized by your domain, and it was not modified on the way.</p>
 
 <div class="toc"><strong>On this page</strong><ol>

@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OVHcloud SPF, DKIM and DMARC Setup: MX Plan, Email Pro, Exchange</title>
-<meta name="description" content="Set up SPF, DKIM and DMARC for OVHcloud MX Plan, Email Pro and Exchange: the mx.ovh.com SPF include, enabling DKIM from the Control Panel, the CNAME records and DMARC.">
+<title>OVHcloud SPF, DKIM &amp; DMARC Setup: MX Plan, Email Pro, Exchange</title>
+<meta name="description" content="OVHcloud MX Plan, Email Pro and Exchange: the mx.ovh.com SPF include, enabling DKIM, the CNAME records and DMARC.">
 <link rel="canonical" href="https://spfdkimdmarc.com/guides/ovhcloud/">
 <meta property="og:type" content="article">
-<meta property="og:title" content="OVHcloud SPF, DKIM and DMARC Setup: MX Plan, Email Pro, Exchange">
-<meta property="og:description" content="Set up SPF, DKIM and DMARC for OVHcloud MX Plan, Email Pro and Exchange: the mx.ovh.com SPF include, enabling DKIM from the Control Panel, the CNAME records and DMARC.">
+<meta property="og:title" content="OVHcloud SPF, DKIM &amp; DMARC Setup: MX Plan, Email Pro, Exchange">
+<meta property="og:description" content="OVHcloud MX Plan, Email Pro and Exchange: the mx.ovh.com SPF include, enabling DKIM, the CNAME records and DMARC.">
 <meta property="og:url" content="https://spfdkimdmarc.com/guides/ovhcloud/">
 <meta property="og:site_name" content="spfdkimdmarc.com">
 <meta name="theme-color" content="#0f172a">
@@ -20,7 +20,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="/assets/style.css?v=86af2691">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://spfdkimdmarc.com/"},{"@type":"ListItem","position":2,"name":"Guides","item":"https://spfdkimdmarc.com/guides/"},{"@type":"ListItem","position":3,"name":"OVHcloud","item":"https://spfdkimdmarc.com/guides/ovhcloud/"}]}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"SPF, DKIM and DMARC for OVHcloud email","description":"Set up SPF, DKIM and DMARC for OVHcloud MX Plan, Email Pro and Exchange: the mx.ovh.com SPF include, enabling DKIM from the Control Panel, the CNAME records and DMARC.","url":"https://spfdkimdmarc.com/guides/ovhcloud/","datePublished":"2026-10-18","dateModified":"2026-10-18","inLanguage":"en","author":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/about/"},"publisher":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/","logo":{"@type":"ImageObject","url":"https://spfdkimdmarc.com/assets/apple-touch-icon.png?v=3f03f617"}}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"SPF, DKIM and DMARC for OVHcloud email","description":"OVHcloud MX Plan, Email Pro and Exchange: the mx.ovh.com SPF include, enabling DKIM, the CNAME records and DMARC.","url":"https://spfdkimdmarc.com/guides/ovhcloud/","datePublished":"2026-10-18","dateModified":"2026-10-21","inLanguage":"en","author":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/about/"},"publisher":{"@type":"Organization","name":"spfdkimdmarc.com","url":"https://spfdkimdmarc.com/","logo":{"@type":"ImageObject","url":"https://spfdkimdmarc.com/assets/apple-touch-icon.png?v=3f03f617"}}}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is DKIM configured automatically at OVHcloud?","acceptedAnswer":{"@type":"Answer","text":"When the domain's DNS zone is managed in the same OVHcloud account as the email service, OVHcloud proposes and performs the DKIM configuration by default. If your DNS is elsewhere, you add the two CNAME records yourself."}},{"@type":"Question","name":"Which SPF include covers Private Exchange?","acceptedAnswer":{"@type":"Answer","text":"Private Exchange uses its own server addresses, so OVHcloud documents ip4 and ip6 entries for it instead. Add include:mx.ovh.com only if you also use a shared offer."}},{"@type":"Question","name":"What about mail sent by my OVHcloud web hosting?","acceptedAnswer":{"@type":"Answer","text":"Scripts on a web hosting plan (contact forms, WordPress notifications) do not necessarily use the same servers as your mailboxes. The most reliable fix is to make the website send through an authenticated mailbox over SMTP."}}]}</script>
 </head>
 <body>
@@ -29,7 +29,7 @@
 <p class="crumbs"><a href="/">Home</a> / <a href="/guides/">Guides</a> / OVHcloud</p>
 <article>
 <h1>SPF, DKIM and DMARC for OVHcloud email</h1>
-<p class="meta">Updated 2026-10-18</p>
+<p class="meta">Updated 2026-10-21</p>
 <p>OVHcloud offers several email services on the same domain: MX Plan (included with web hosting), Email Pro, Hosted Exchange and Private Exchange. SPF uses one include for the shared offers, and DKIM is enabled from the Control Panel. The details below follow the OVHcloud documentation.</p>
 
 <div class="toc"><strong>On this page</strong><ol>
