@@ -148,6 +148,7 @@ def render(p, by_path):
     out.append('<meta name="twitter:card" content="summary_large_image">')
     out.append('<link rel="stylesheet" href="/assets/style.css?v=%s">' % CSS_VER)
     out.extend(jsonld(o) for o in ld)
+    out.append('<script src="https://analytics.ahrefs.com/analytics.js" data-key="3H/m3TJDsHGsbmWx7xrI7w" async></script>')
     out.append("</head>\n<body>")
     out.append(header(p["path"], nav))
     out.append('<div class="wrap">')
