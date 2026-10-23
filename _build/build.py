@@ -9,6 +9,7 @@ import html
 import json
 import os
 import re
+from html.parser import HTMLParser
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -132,6 +133,8 @@ def render(p, by_path):
     out.append("<title>%s</title>" % esc(seo_title))
     out.append('<meta name="description" content="%s">' % esc(p["description"]))
     out.append('<link rel="canonical" href="%s">' % url)
+    if not p.get("noindex"):
+        out.append('<link rel="alternate" type="text/markdown" href="%sindex.md">' % url)
     if p.get("noindex"):
         out.append('<meta name="robots" content="noindex">')
     out.append('<meta property="og:type" content="%s">' % ("website" if p["type"] == "home" else "article"))
@@ -195,6 +198,124 @@ def render(p, by_path):
     return "\n".join(out)
 
 
+class Markdown(HTMLParser):
+    """Version Markdown d'un corps de page, servie aux agents qui envoient Accept: text/markdown (Worker Cloudflare markdown-agents)."""
+    SKIP = {'script', 'style', 'svg', 'form', 'button', 'header', 'select'}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.out, self.lists, self.skip, self.href, self.row, self.cell, self.head_row = [], [], 0, [], None, None, False
+        self.pre = False
+
+    def w(self, s):
+        if self.cell is not None:
+            self.cell.append(s)
+        else:
+            self.out.append(s)
+
+    def handle_starttag(self, tag, attrs):
+        a = dict(attrs)
+        if tag in self.SKIP:
+            self.skip += 1
+        elif self.skip:
+            return
+        elif tag in ('h1', 'h2', 'h3', 'h4'):
+            self.w('\n\n' + '#' * int(tag[1]) + ' ')
+        elif tag in ('p', 'div', 'section', 'aside', 'fieldset', 'figure', 'nav'):
+            self.w('\n\n')
+        elif tag == 'br':
+            self.w('  \n')
+        elif tag in ('strong', 'b', 'legend'):
+            self.w('**')
+        elif tag in ('em', 'i'):
+            self.w('*')
+        elif tag in ('ul', 'ol'):
+            self.lists.append([tag, 0])
+            self.w('\n')
+        elif tag == 'li':
+            l = self.lists[-1] if self.lists else ['ul', 0]
+            l[1] += 1
+            self.w('\n' + '  ' * (len(self.lists) - 1) + (f'{l[1]}. ' if l[0] == 'ol' else '- '))
+        elif tag == 'a':
+            h = a.get('href', '')
+            self.href.append(SITE + h if h.startswith('/') else h)
+            self.w('[')
+        elif tag == 'img':
+            src = a.get('src', '')
+            self.w(f'![{a.get("alt", "")}]({SITE + src if src.startswith("/") else src})')
+        elif tag == 'table':
+            self.w('\n\n')
+        elif tag == 'tr':
+            self.row, self.head_row = [], False
+        elif tag in ('td', 'th'):
+            self.cell = []
+            self.head_row |= tag == 'th'
+        elif tag == 'figcaption':
+            self.w('\n\n*')
+        elif tag == 'pre':
+            self.pre = True
+            self.w('\n\n```\n')
+        elif tag == 'code' and not self.pre:
+            self.w('`')
+
+    def handle_endtag(self, tag):
+        if tag in self.SKIP:
+            self.skip = max(0, self.skip - 1)
+        elif self.skip:
+            return
+        elif tag in ('strong', 'b', 'legend'):
+            self.w('**')
+        elif tag in ('em', 'i'):
+            self.w('*')
+        elif tag in ('ul', 'ol'):
+            if self.lists:
+                self.lists.pop()
+            self.w('\n\n')
+        elif tag == 'a':
+            self.w(f']({self.href.pop() if self.href else ""})')
+        elif tag in ('td', 'th') and self.cell is not None:
+            self.row.append(' '.join(''.join(self.cell).split()).replace('|', '\\|'))
+            self.cell = None
+        elif tag == 'tr' and self.row is not None:
+            self.out.append('| ' + ' | '.join(self.row) + ' |\n')
+            if self.head_row:
+                self.out.append('|' + ' --- |' * len(self.row) + '\n')
+            self.row = None
+        elif tag == 'figcaption':
+            self.w('*')
+        elif tag == 'pre':
+            self.pre = False
+            self.w('\n```\n\n')
+        elif tag == 'code' and not self.pre:
+            self.w('`')
+        elif tag in ('p', 'h1', 'h2', 'h3', 'h4', 'table'):
+            self.w('\n\n')
+
+    def handle_data(self, data):
+        if self.skip or (self.row is not None and self.cell is None):
+            return
+        self.w(data.strip('\n') if self.pre else re.sub(r'\s+', ' ', data))
+
+    def text(self):
+        md = re.sub(r'[ \t]+\n', '\n', ''.join(self.out))
+        md = re.sub(r'\n +(?=[^-\d ])', '\n', md)
+        return re.sub(r'\n{3,}', '\n\n', md).strip() + '\n'
+
+
+def markdown(p, page_html):
+    """index.md of a page: title, description, URL and date, then the page content converted from HTML."""
+    m = Markdown()
+    m.feed(page_html.split('<div class="wrap">', 1)[1].split('<footer', 1)[0])
+    m.close()
+    meta = "URL: %s%s" % (SITE, p["path"])
+    if p.get("updated"):
+        meta += "  \nUpdated: %s" % p["updated"]
+    body = re.sub(r"^\[Home\]\([^)]*\)[^\n]*\n+", "", m.text())
+    body = re.sub(r"^# [^\n]*\n+(Updated [0-9-]+\n+)?", "", body)
+    body = re.sub(r"^## (\d)(\S)", r"## \1. \2", body, flags=re.M)
+    return "# %s\n\n> %s\n\n%s\n\n%s" % (p["title"], p["description"], meta, body)
+
+
 def main():
     pages = load_pages()
     by_path = {p["path"]: p for p in pages}
@@ -205,8 +326,12 @@ def main():
             d = os.path.join(ROOT, p["path"].strip("/"))
             os.makedirs(d, exist_ok=True)
             dest = os.path.join(d, "index.html")
+        page = bust(render(p, by_path))
         with open(dest, "w", encoding="utf-8") as f:
-            f.write(bust(render(p, by_path)))
+            f.write(page)
+        if not p.get("noindex"):
+            with open(dest[:-len("html")] + "md", "w", encoding="utf-8") as f:
+                f.write(markdown(p, page))
     urls = sorted((p for p in pages if not p.get("noindex")), key=lambda p: (p["path"] != "/", p["path"]))
     with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
