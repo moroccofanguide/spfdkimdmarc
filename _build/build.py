@@ -332,22 +332,42 @@ def main():
         if not p.get("noindex"):
             with open(dest[:-len("html")] + "md", "w", encoding="utf-8") as f:
                 f.write(markdown(p, page))
-    # AI agent discovery: skills index (digests computed here) and ARD catalog
-    import hashlib as _h
+    # AI agent discovery: skills as reproducible .tar.gz archives (Jekyll stays on to keep _build/ off the site,
+    # and it would turn a SKILL.md with YAML front matter into HTML), index with digests, ARD catalog
+    import gzip, io, tarfile, hashlib as _h
     wk = os.path.join(ROOT, ".well-known")
+    os.makedirs(os.path.join(wk, "agent-skills"), exist_ok=True)
     skills = []
-    for nom in sorted(os.listdir(os.path.join(wk, "agent-skills"))):
-        sk = os.path.join(wk, "agent-skills", nom, "SKILL.md")
-        if os.path.isfile(sk):
-            raw = open(sk, "rb").read()
-            desc = re.search(r"^description: (.+)$", raw.decode("utf-8"), re.M).group(1)
-            skills.append({"name": nom, "type": "skill-md", "description": desc,
-                           "url": "/.well-known/agent-skills/%s/SKILL.md" % nom, "digest": "sha256:" + _h.sha256(raw).hexdigest()})
+    for nom in sorted(os.listdir(os.path.join(HERE, "skills"))):
+        sk = os.path.join(HERE, "skills", nom, "SKILL.md")
+        if not os.path.isfile(sk):
+            continue
+        raw = open(sk, "rb").read()
+        tar = io.BytesIO()
+        with tarfile.open(fileobj=tar, mode="w", format=tarfile.USTAR_FORMAT) as t:
+            for chemin, data in ((nom + "/", None), (nom + "/SKILL.md", raw)):
+                ti = tarfile.TarInfo(chemin)
+                ti.mtime, ti.uid, ti.gid, ti.uname, ti.gname = 0, 0, 0, "", ""
+                if data is None:
+                    ti.type, ti.mode = tarfile.DIRTYPE, 0o755
+                    t.addfile(ti)
+                else:
+                    ti.size, ti.mode = len(data), 0o644
+                    t.addfile(ti, io.BytesIO(data))
+        gz = io.BytesIO()
+        with gzip.GzipFile(filename="", mode="wb", fileobj=gz, mtime=0) as g:
+            g.write(tar.getvalue())
+        arch = gz.getvalue()
+        with open(os.path.join(wk, "agent-skills", nom + ".tar.gz"), "wb") as f:
+            f.write(arch)
+        desc = re.search(r"^description: (.+)$", raw.decode("utf-8"), re.M).group(1)
+        skills.append({"name": nom, "type": "archive", "description": desc,
+                       "url": "/.well-known/agent-skills/%s.tar.gz" % nom, "digest": "sha256:" + _h.sha256(arch).hexdigest()})
     with open(os.path.join(wk, "agent-skills", "index.json"), "w", encoding="utf-8") as f:
         json.dump({"$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json", "skills": skills}, f, indent=2)
     host = SITE.split("//")[1]
     entries = [{"identifier": "urn:air:%s:skill:%s" % (host, s["name"]), "displayName": "SPF, DKIM and DMARC check",
-                "type": "text/markdown", "url": SITE + s["url"], "description": s["description"],
+                "type": "application/gzip", "url": SITE + s["url"], "description": s["description"],
                 "representativeQueries": ["check my SPF record", "why is my email going to spam",
                                           "is my DMARC record correct", "find my DKIM selector"]} for s in skills]
     entries.append({"identifier": "urn:air:%s:docs:llms-txt" % host, "displayName": "spfdkimdmarc.com overview for language models",

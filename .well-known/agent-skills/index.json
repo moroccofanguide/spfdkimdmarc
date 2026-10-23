@@ -3,10 +3,10 @@
   "skills": [
     {
       "name": "email-authentication-check",
-      "type": "skill-md",
+      "type": "archive",
       "description": "Check and fix a domain's SPF, DKIM and DMARC records with public DNS-over-HTTPS lookups, explain what is wrong and give the exact record to publish. Use when a user's email lands in spam, is rejected, or they set up Google Workspace, Microsoft 365, Zoho Mail or OVHcloud mail.",
-      "url": "/.well-known/agent-skills/email-authentication-check/SKILL.md",
-      "digest": "sha256:a68c5c5bf5c95c6e71bc67d8eb45c827ca196364f7b0620e973429e09ac40a58"
+      "url": "/.well-known/agent-skills/email-authentication-check.tar.gz",
+      "digest": "sha256:345cdacf9f89063b16715178ac52f83f3c144764304c1c62c57d521190f7677f"
     }
   ]
 }

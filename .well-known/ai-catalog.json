@@ -8,8 +8,8 @@
     {
       "identifier": "urn:air:spfdkimdmarc.com:skill:email-authentication-check",
       "displayName": "SPF, DKIM and DMARC check",
-      "type": "text/markdown",
-      "url": "https://spfdkimdmarc.com/.well-known/agent-skills/email-authentication-check/SKILL.md",
+      "type": "application/gzip",
+      "url": "https://spfdkimdmarc.com/.well-known/agent-skills/email-authentication-check.tar.gz",
       "description": "Check and fix a domain's SPF, DKIM and DMARC records with public DNS-over-HTTPS lookups, explain what is wrong and give the exact record to publish. Use when a user's email lands in spam, is rejected, or they set up Google Workspace, Microsoft 365, Zoho Mail or OVHcloud mail.",
       "representativeQueries": [
         "check my SPF record",
