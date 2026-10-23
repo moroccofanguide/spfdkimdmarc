@@ -1,0 +1,32 @@
+{
+  "specVersion": "1.0",
+  "host": {
+    "displayName": "spfdkimdmarc.com",
+    "identifier": "did:web:spfdkimdmarc.com"
+  },
+  "entries": [
+    {
+      "identifier": "urn:air:spfdkimdmarc.com:skill:email-authentication-check",
+      "displayName": "SPF, DKIM and DMARC check",
+      "type": "text/markdown",
+      "url": "https://spfdkimdmarc.com/.well-known/agent-skills/email-authentication-check/SKILL.md",
+      "description": "Check and fix a domain's SPF, DKIM and DMARC records with public DNS-over-HTTPS lookups, explain what is wrong and give the exact record to publish. Use when a user's email lands in spam, is rejected, or they set up Google Workspace, Microsoft 365, Zoho Mail or OVHcloud mail.",
+      "representativeQueries": [
+        "check my SPF record",
+        "why is my email going to spam",
+        "is my DMARC record correct",
+        "find my DKIM selector"
+      ]
+    },
+    {
+      "identifier": "urn:air:spfdkimdmarc.com:docs:llms-txt",
+      "displayName": "spfdkimdmarc.com overview for language models",
+      "type": "text/plain",
+      "url": "https://spfdkimdmarc.com/llms.txt",
+      "representativeQueries": [
+        "SPF DKIM DMARC setup guide",
+        "DMARC policy rollout"
+      ]
+    }
+  ]
+}

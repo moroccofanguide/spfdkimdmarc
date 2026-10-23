@@ -199,6 +199,56 @@ $("f-dkim").addEventListener("submit", async function(e){
 
 renderSpf(); renderDmarc();
 
+/* WebMCP: the same read-only checks, exposed to AI agents running in the browser */
+try {
+  var mc = document.modelContext || navigator.modelContext;
+  if (mc && mc.registerTool) {
+    var ac = new AbortController();
+    var dom = { type: "string", description: "Domain name, for example example.com" };
+    mc.registerTool({
+      name: "check_email_auth",
+      description: "Look up a domain's MX, SPF and DMARC records in public DNS and list problems (missing record, several SPF records, +all, DMARC p=none).",
+      inputSchema: { type: "object", properties: { domain: dom }, required: ["domain"] },
+      annotations: { readOnlyHint: true },
+      execute: async function(a){
+        var d = cleanDomain(a && a.domain);
+        if (!d) throw new Error("Enter a valid domain, for example example.com");
+        var res = await Promise.all([doh(d,"MX"), doh(d,"TXT"), doh("_dmarc."+d,"TXT")]);
+        var mx = (res[0].Answer||[]).filter(function(x){return x.type===15;}).map(function(x){ return x.data.split(" ").pop(); });
+        var spfs = txtValues(res[1],16).filter(function(t){ return /^v=spf1(\s|$)/i.test(t); });
+        var dmarcs = txtValues(res[2],16).filter(function(t){ return /^v=DMARC1/i.test(t); });
+        var p = dmarcs.length ? ((dmarcs[0].match(/;\s*p=(\w+)/i)||[])[1]||"").toLowerCase() : null;
+        var issues = [];
+        if (res[0].Status === 3) issues.push("Domain not found in DNS.");
+        if (!mx.length) issues.push("No MX record: the domain cannot receive email (fine for a send-only domain).");
+        if (!spfs.length) issues.push("No SPF record.");
+        if (spfs.length > 1) issues.push("Several SPF records: only one is allowed, so SPF fails. Merge them.");
+        if (spfs.length === 1 && /\+all\b/.test(spfs[0])) issues.push("SPF ends with +all: anyone can send as this domain.");
+        if (spfs.length === 1 && !/[~+?-]all\b/.test(spfs[0])) issues.push("SPF has no ~all or -all at the end.");
+        if (!dmarcs.length) issues.push("No DMARC record at _dmarc."+d+".");
+        if (p === "none") issues.push("DMARC p=none only monitors: move to quarantine, then reject, once reports are clean.");
+        var r = { domain: d, mx: mx, spf: spfs, dmarc: dmarcs, dmarc_policy: p, issues: issues, status: issues.length ? "needs_attention" : "ok" };
+        return { content: [{ type: "text", text: JSON.stringify(r) }] };
+      }
+    }, { signal: ac.signal });
+    mc.registerTool({
+      name: "check_dkim",
+      description: "Look up the DKIM key at <selector>._domainkey.<domain> and say whether it exists, is revoked (empty p=) or is a pending CNAME.",
+      inputSchema: { type: "object", properties: { domain: dom, selector: { type: "string", description: "DKIM selector, for example google or selector1" } }, required: ["domain","selector"] },
+      annotations: { readOnlyHint: true },
+      execute: async function(a){
+        var d = cleanDomain(a && a.domain), sel = String((a && a.selector)||"").trim().toLowerCase().replace(/\._domainkey.*$/,"");
+        if (!d || !/^[a-z0-9._-]+$/.test(sel)) throw new Error("Give a valid domain and DKIM selector");
+        var name = sel+"._domainkey."+d, j = await doh(name,"TXT");
+        var cname = (j.Answer||[]).filter(function(x){return x.type===5;}).map(function(x){return x.data;});
+        var keys = txtValues(j,16).filter(function(t){ return /(^|;)\s*(v=DKIM1|k=|p=)/i.test(t); });
+        var st = keys.length ? (keys.some(function(k){ return /(^|;)\s*p=\s*(;|$)/i.test(k); }) ? "revoked" : "ok") : (cname.length ? "cname_pending" : "missing");
+        return { content: [{ type: "text", text: JSON.stringify({ name: name, status: st, cname: cname, record: keys[0] || null }) }] };
+      }
+    }, { signal: ac.signal });
+  }
+} catch(e){}
+
 /* Prefill from ?d=example.com (links from the guides) */
 try {
   var qd = new URLSearchParams(location.search).get("d");

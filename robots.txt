@@ -1,4 +1,7 @@
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
+Disallow: /_build/
 
 Sitemap: https://spfdkimdmarc.com/sitemap.xml
+Agentmap: https://spfdkimdmarc.com/.well-known/ai-catalog.json

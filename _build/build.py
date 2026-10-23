@@ -332,6 +332,29 @@ def main():
         if not p.get("noindex"):
             with open(dest[:-len("html")] + "md", "w", encoding="utf-8") as f:
                 f.write(markdown(p, page))
+    # AI agent discovery: skills index (digests computed here) and ARD catalog
+    import hashlib as _h
+    wk = os.path.join(ROOT, ".well-known")
+    skills = []
+    for nom in sorted(os.listdir(os.path.join(wk, "agent-skills"))):
+        sk = os.path.join(wk, "agent-skills", nom, "SKILL.md")
+        if os.path.isfile(sk):
+            raw = open(sk, "rb").read()
+            desc = re.search(r"^description: (.+)$", raw.decode("utf-8"), re.M).group(1)
+            skills.append({"name": nom, "type": "skill-md", "description": desc,
+                           "url": "/.well-known/agent-skills/%s/SKILL.md" % nom, "digest": "sha256:" + _h.sha256(raw).hexdigest()})
+    with open(os.path.join(wk, "agent-skills", "index.json"), "w", encoding="utf-8") as f:
+        json.dump({"$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json", "skills": skills}, f, indent=2)
+    host = SITE.split("//")[1]
+    entries = [{"identifier": "urn:air:%s:skill:%s" % (host, s["name"]), "displayName": "SPF, DKIM and DMARC check",
+                "type": "text/markdown", "url": SITE + s["url"], "description": s["description"],
+                "representativeQueries": ["check my SPF record", "why is my email going to spam",
+                                          "is my DMARC record correct", "find my DKIM selector"]} for s in skills]
+    entries.append({"identifier": "urn:air:%s:docs:llms-txt" % host, "displayName": "spfdkimdmarc.com overview for language models",
+                    "type": "text/plain", "url": SITE + "/llms.txt",
+                    "representativeQueries": ["SPF DKIM DMARC setup guide", "DMARC policy rollout"]})
+    with open(os.path.join(wk, "ai-catalog.json"), "w", encoding="utf-8") as f:
+        json.dump({"specVersion": "1.0", "host": {"displayName": NAME, "identifier": "did:web:" + host}, "entries": entries}, f, indent=2)
     urls = sorted((p for p in pages if not p.get("noindex")), key=lambda p: (p["path"] != "/", p["path"]))
     with open(os.path.join(ROOT, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
