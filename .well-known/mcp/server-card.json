@@ -1,0 +1,24 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/mcp-server-card/v1.json",
+  "version": "1.0",
+  "protocolVersion": "2025-06-18",
+  "serverInfo": {
+    "name": "spfdkimdmarc",
+    "title": "SPF, DKIM & DMARC checker",
+    "version": "1.0.0"
+  },
+  "description": "Read-only checks of a domain's MX, SPF, DMARC and DKIM records through public DNS-over-HTTPS. Nothing is stored.",
+  "documentationUrl": "https://spfdkimdmarc.com/",
+  "transport": {
+    "type": "streamable-http",
+    "endpoint": "https://spfdkimdmarc.com/mcp"
+  },
+  "capabilities": {
+    "tools": { "listChanged": false }
+  },
+  "authentication": { "required": false },
+  "tools": [
+    { "name": "check_email_auth", "description": "Look up a domain's MX, SPF and DMARC records and list problems." },
+    { "name": "check_dkim", "description": "Look up the DKIM key for a selector and say whether it exists, is revoked or pending." }
+  ]
+}

@@ -19,6 +19,18 @@
       ]
     },
     {
+      "identifier": "urn:air:spfdkimdmarc.com:server:email-auth",
+      "displayName": "SPF, DKIM & DMARC checker (MCP server)",
+      "type": "application/mcp-server-card+json",
+      "url": "https://spfdkimdmarc.com/.well-known/mcp/server-card.json",
+      "representativeQueries": [
+        "check the SPF record of a domain",
+        "does this domain have DMARC",
+        "verify a DKIM selector",
+        "why do my emails fail authentication"
+      ]
+    },
+    {
       "identifier": "urn:air:spfdkimdmarc.com:docs:llms-txt",
       "displayName": "spfdkimdmarc.com overview for language models",
       "type": "text/plain",

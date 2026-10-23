@@ -10,6 +10,8 @@ Notes for language models:
 ## Tool
 
 - [SPF, DKIM & DMARC checker and generator](https://spfdkimdmarc.com/): check a domain and generate records. A domain can be passed as `?d=example.com`.
+- MCP server (Streamable HTTP, no authentication, read-only): `https://spfdkimdmarc.com/mcp`, tools `check_email_auth` and `check_dkim`. Server card: https://spfdkimdmarc.com/.well-known/mcp/server-card.json
+- Agent skill: https://spfdkimdmarc.com/.well-known/agent-skills/index.json ; every page is also served as Markdown with `Accept: text/markdown`.
 
 ## How each record works
 

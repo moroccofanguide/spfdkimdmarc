@@ -1,11 +1,11 @@
 # Privacy policy
 
-> What spfdkimdmarc.com does and does not collect: no accounts, no cookies, cookieless visit statistics, DNS lookups made from your browser.
+> What spfdkimdmarc.com collects: no accounts, no cookies, cookieless visit statistics, DNS lookups from your browser or our MCP endpoint.
 
 URL: https://spfdkimdmarc.com/privacy/  
-Updated: 2026-10-22
+Updated: 2026-10-23
 
-Last updated 2026-10-22
+Last updated 2026-10-23
 
 ## What this site collects
 
@@ -18,6 +18,10 @@ When you write to help@spfdkimdmarc.com, for example to request the setup servic
 ## DNS lookups
 
 When you check a domain, your browser sends DNS queries for that domain directly to Cloudflare's public DNS-over-HTTPS resolver (`cloudflare-dns.com`), or to Google Public DNS (`dns.google`) if Cloudflare does not answer. These requests go from your browser to those services, not through us. Their own privacy policies apply to them.
+
+## AI assistants (MCP)
+
+Since 2026-10-23, AI assistants can run the same checks through our MCP endpoint (`https://spfdkimdmarc.com/mcp`) or, on the home page, through the browser's WebMCP interface. On the MCP endpoint, the assistant sends us the domain (and DKIM selector) to check; our server, a Cloudflare Worker, queries the same public DNS-over-HTTPS resolvers and returns the result. We do not store these requests or their results, and we do not log them. Cloudflare processes them as our host (see Hosting). WebMCP checks run in your browser, like the regular checker.
 
 ## Visit statistics
 

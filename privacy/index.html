@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Privacy Policy | spfdkimdmarc.com</title>
-<meta name="description" content="What spfdkimdmarc.com does and does not collect: no accounts, no cookies, cookieless visit statistics, DNS lookups made from your browser.">
+<meta name="description" content="What spfdkimdmarc.com collects: no accounts, no cookies, cookieless visit statistics, DNS lookups from your browser or our MCP endpoint.">
 <link rel="canonical" href="https://spfdkimdmarc.com/privacy/">
 <link rel="alternate" type="text/markdown" href="https://spfdkimdmarc.com/privacy/index.md">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Privacy Policy | spfdkimdmarc.com">
-<meta property="og:description" content="What spfdkimdmarc.com does and does not collect: no accounts, no cookies, cookieless visit statistics, DNS lookups made from your browser.">
+<meta property="og:description" content="What spfdkimdmarc.com collects: no accounts, no cookies, cookieless visit statistics, DNS lookups from your browser or our MCP endpoint.">
 <meta property="og:url" content="https://spfdkimdmarc.com/privacy/">
 <meta property="og:site_name" content="spfdkimdmarc.com">
 <meta name="theme-color" content="#0f172a">
@@ -29,13 +29,15 @@
 <p class="crumbs"><a href="/">Home</a> / Privacy</p>
 <article>
 <h1>Privacy policy</h1>
-<p class="meta">Last updated 2026-10-22</p>
+<p class="meta">Last updated 2026-10-23</p>
 <h2>What this site collects</h2>
 <p>Nothing that identifies you while you browse. There are no accounts, no forms sent to our servers, no cookies and no advertising trackers. Visits are counted with a cookieless analytics tool (see below).</p>
 <h2>If you email us</h2>
 <p>When you write to help@spfdkimdmarc.com, for example to request the setup service, we receive your email address and what you send. We use it only to answer you and to carry out the work you ask for, and we do not share it.</p>
 <h2>DNS lookups</h2>
 <p>When you check a domain, your browser sends DNS queries for that domain directly to Cloudflare's public DNS-over-HTTPS resolver (<code>cloudflare-dns.com</code>), or to Google Public DNS (<code>dns.google</code>) if Cloudflare does not answer. These requests go from your browser to those services, not through us. Their own privacy policies apply to them.</p>
+<h2>AI assistants (MCP)</h2>
+<p>Since 2026-10-23, AI assistants can run the same checks through our MCP endpoint (<code>https://spfdkimdmarc.com/mcp</code>) or, on the home page, through the browser's WebMCP interface. On the MCP endpoint, the assistant sends us the domain (and DKIM selector) to check; our server, a Cloudflare Worker, queries the same public DNS-over-HTTPS resolvers and returns the result. We do not store these requests or their results, and we do not log them. Cloudflare processes them as our host (see Hosting). WebMCP checks run in your browser, like the regular checker.</p>
 <h2>Visit statistics</h2>
 <p>Since 2026-10-22 the site uses <a href="https://help.ahrefs.com/en/articles/10247870-about-ahrefs-web-analytics" rel="noopener">Ahrefs Web Analytics</a> to count visits. According to Ahrefs, it sets no cookie, does not store IP addresses and does not track a visitor from one day to the next. It records the pages viewed, the referring site, your country, your browser and your device type.</p>
 <h2>Hosting</h2>

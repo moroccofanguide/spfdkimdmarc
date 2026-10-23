@@ -370,6 +370,10 @@ def main():
                 "type": "application/gzip", "url": SITE + s["url"], "description": s["description"],
                 "representativeQueries": ["check my SPF record", "why is my email going to spam",
                                           "is my DMARC record correct", "find my DKIM selector"]} for s in skills]
+    entries.append({"identifier": "urn:air:%s:server:email-auth" % host, "displayName": "SPF, DKIM & DMARC checker (MCP server)",
+                    "type": "application/mcp-server-card+json", "url": SITE + "/.well-known/mcp/server-card.json",
+                    "representativeQueries": ["check the SPF record of a domain", "does this domain have DMARC",
+                                              "verify a DKIM selector", "why do my emails fail authentication"]})
     entries.append({"identifier": "urn:air:%s:docs:llms-txt" % host, "displayName": "spfdkimdmarc.com overview for language models",
                     "type": "text/plain", "url": SITE + "/llms.txt",
                     "representativeQueries": ["SPF DKIM DMARC setup guide", "DMARC policy rollout"]})
